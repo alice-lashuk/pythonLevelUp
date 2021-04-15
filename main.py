@@ -32,15 +32,16 @@ def root():
 @app.get("/auth")
 def checkPassword(response: Response, password: Optional[str] = None, password_hash: Optional[str] = None):
 	new_password = ''
+
 	if password is None:
 		new_password = password
 	else:
 		new_password = password.strip()
 	hash = hashlib.sha512(str(new_password).encode("utf-8")).hexdigest()
-	if hash == password_hash:
+	if password == "":
+		response.status_code = 401
+	elif hash == password_hash:
 		response.status_code = 204
-		return{"method": "204", "hash": hash}
 	else: 
 		response.status_code = 401
-		return{"method": "401", "hash": hash}
 

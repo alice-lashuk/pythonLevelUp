@@ -45,3 +45,7 @@ def test_checkPasswrod_method():
 	space = " "
 	response = client.get(f"/auth?password={space}&password_hash=f90ddd77e400dfe6a3fcf479b00b1ee29e7015c5bb8cd70f5f15b4886cc339275ff553fc8a053f8ddc7324f45168cffaf81f8c3ac93996f6536eef38e5e40768")
 	assert response.status_code == 401
+	response = client.get(f"/auth?password=&password_hash=cf83e1357eefb8bdf1542850d66d8007d620e4050b5715dc83f4a921d36ce9ce47d0d13c5d85f2b0ff8318d2877eec2f63b931bd47417a81a538327af927da3e")
+	assert response.status_code == 401
+	
+
