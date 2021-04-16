@@ -67,7 +67,10 @@ def registerPerson(response: Response, request:PersonRequest):
 	new_surname = request.surname.strip()
 	new_name = new_name.replace(" ", "").replace('\n', "").replace('\r', "")
 	new_surname = new_surname.replace(" ", "").replace('\n', "").replace('\r', "")
-	num_days = len(new_surname) + len(new_name)
+
+	result_name = ''.join(filter(str.isalpha, new_name))    
+	result_surname =  ''.join(filter(str.isalpha, new_surname))    
+	num_days = len(result_name) + len(result_surname)
 	vac_date = register_date + timedelta(days=num_days)
 	response.status_code = 201
 	return PersonResp(id = app.id, name = request.name, surname = request.surname, register_date = str(register_date), vaccination_date = str(vac_date))
