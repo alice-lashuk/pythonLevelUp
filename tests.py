@@ -1,6 +1,7 @@
 from fastapi.testclient import TestClient
 
 from main import app
+import json
 
 client = TestClient(app)
 
@@ -47,5 +48,13 @@ def test_checkPasswrod_method():
 	assert response.status_code == 401
 	response = client.get(f"/auth?password=&password_hash=cf83e1357eefb8bdf1542850d66d8007d620e4050b5715dc83f4a921d36ce9ce47d0d13c5d85f2b0ff8318d2877eec2f63b931bd47417a81a538327af927da3e")
 	assert response.status_code == 401
+
+def test_register_method():
+	name = "Alice"
+	surname = "Lashuk"
+	data = {"name":"Alice", "surname":"Lashuk"}
+	response = client.post(f"/register", data=json.dumps(data), headers={"Content-Type": "application/json"})
+	assert response.json() == {"id":1, "name":"Alice", "surname":"Lashuk", "register_date": "2021-04-16","vaccination_date": "2021-04-27" }
+
 	
 

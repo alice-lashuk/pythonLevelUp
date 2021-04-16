@@ -1,9 +1,23 @@
 
 from fastapi import FastAPI, Response, status
 from typing import Optional
+from pydantic import BaseModel
 import hashlib
+from datetime import datetime, timedelta
 
 app = FastAPI()
+app.id = 0
+
+class PersonRequest(BaseModel):
+    name: str
+    surname: str
+
+class PersonResp(BaseModel):
+	id: int
+	name: str
+	surname: str
+	register_date: str
+	vaccination_date: str 
 
 @app.get("/")
 def root():
@@ -44,4 +58,40 @@ def checkPassword(response: Response, password: Optional[str] = None, password_h
 		response.status_code = 204
 	else: 
 		response.status_code = 401
+
+@app.post("/register", response_model=PersonResp)
+def registerPerson(response: Response, request:PersonRequest):
+	app.id += 1
+	register_date = datetime.date(datetime.now())
+	new_name = request.name.strip()
+	new_surname = request.surname.strip()
+	num_days = len(new_surname) + len(new_name)
+	vac_date = register_date + timedelta(days=num_days)
+	response.status_code = 201
+	return PersonResp(id = app.id, name = request.name, surname = request.surname, register_date = str(register_date), vaccination_date = str(vac_date))
+	
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
