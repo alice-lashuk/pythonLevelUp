@@ -82,20 +82,20 @@ def get_people():
 	return app.persons
 
 @app.get("/patient/{id}")
-def get_person_by_id(id: int, response: Response):
+def get_person_by_id(id: str, response: Response):
 	new_id = int(id)
 	if new_id < 0:
 		response.status_code = 400
 	else:
-		if len(app.persons) < 1:
+		# if len(app.persons) < 1:
+		if not app.persons:
 			response.status_code = 404
 		else:
 			for i in app.persons:
 				if i.id == new_id:
 					response.status_code = 200
 					return i
-				else:
-					response.status_code = 404
+			response.status_code = 404
 
 
 
