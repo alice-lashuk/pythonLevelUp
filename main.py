@@ -83,14 +83,15 @@ def get_people():
 
 @app.get("/patient/{id}")
 def get_person_by_id(id: int, response: Response):
-	if id < 0:
+	new_id = int(id)
+	if new_id < 0:
 		response.status_code = 400
 	else:
 		if len(app.persons) < 1:
 			response.status_code = 404
 		else:
 			for i in app.persons:
-				if i.id == id:
+				if i.id == new_id:
 					response.status_code = 200
 					return i
 				else:
