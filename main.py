@@ -65,6 +65,8 @@ def registerPerson(response: Response, request:PersonRequest):
 	register_date = datetime.date(datetime.now())
 	new_name = request.name.strip()
 	new_surname = request.surname.strip()
+	new_name = new_name.replace(" ", "").replace('\n', "").replace('\r', "")
+	new_surname = new_surname.replace(" ", "").replace('\n', "").replace('\r', "")
 	num_days = len(new_surname) + len(new_name)
 	vac_date = register_date + timedelta(days=num_days)
 	response.status_code = 201
