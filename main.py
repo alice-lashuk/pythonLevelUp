@@ -7,6 +7,7 @@ from datetime import datetime, timedelta
 
 app = FastAPI()
 app.id = 0
+app.persons = []
 
 class PersonRequest(BaseModel):
     name: str
@@ -67,15 +68,37 @@ def registerPerson(response: Response, request:PersonRequest):
 	new_surname = request.surname.strip()
 	new_name = new_name.replace(" ", "").replace('\n', "").replace('\r', "")
 	new_surname = new_surname.replace(" ", "").replace('\n', "").replace('\r', "")
-
 	result_name = ''.join(filter(str.isalpha, new_name))    
 	result_surname =  ''.join(filter(str.isalpha, new_surname))    
 	num_days = len(result_name) + len(result_surname)
 	vac_date = register_date + timedelta(days=num_days)
 	response.status_code = 201
-	return PersonResp(id = app.id, name = request.name, surname = request.surname, register_date = str(register_date), vaccination_date = str(vac_date))
-	
+	new_person = PersonResp(id = app.id, name = request.name, surname = request.surname, register_date = str(register_date), vaccination_date = str(vac_date))
+	app.persons.append(new_person)	
+	return new_person
 
+@app.get("/people")
+def get_people():
+	return app.persons
+
+@app.get("/patient/{id}")
+def get_person_by_id(id: int, response: Response):
+	if id < 0:
+		response.status_code = 400
+	else:
+		if len(app.persons) < 1:
+			response.status_code = 404
+		else:
+			for i in app.persons:
+				if i.id == id:
+					response.status_code = 200
+					return i
+				else:
+					response.status_code = 404
+
+
+
+	
 
 
 
