@@ -9,6 +9,7 @@ from fastapi.templating import Jinja2Templates
 from fastapi import Depends, FastAPI, HTTPException
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
 from starlette.status import HTTP_401_UNAUTHORIZED
+from fastapi.responses import PlainTextResponse
 
 app = FastAPI()
 app.id = 0
@@ -29,8 +30,6 @@ class PersonResp(BaseModel):
 	surname: str
 	register_date: str
 	vaccination_date: str 
-# ac761392d26fed609a2ce39b269b46a6f1fee82956143a3cab616a207ae80b66
-# ac761392d26fed609a2ce39b269b46a6f1fee82956143a3cab616a207ae80b66
 
 @app.post("/login_session")
 def log_session( response: Response, credentials: HTTPBasicCredentials = Depends(security)):
@@ -65,7 +64,8 @@ def welcome_session(request: Request, response: Response, format: Optional[str] 
 		elif format == "html":
 			return templates.TemplateResponse("hello.html.j2", {"request": request})
 		else:
-			return "Welcome!"
+			welcome = 'Welcome!'
+			return Response(content=welcome, media_type="application/plain")
 
 
 @app.get("/welcome_token")
@@ -78,7 +78,8 @@ def welcome_token(request: Request, response: Response,token: str, format: Optio
 		elif format == "html":
 			return templates.TemplateResponse("hello.html.j2", {"request": request})
 		else:
-			return "Welcome!"
+			welcome = 'Welcome!'
+			return Response(content=welcome, media_type="application/plain")
 
 
 
