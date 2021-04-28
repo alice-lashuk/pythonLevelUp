@@ -1,5 +1,5 @@
 
-from fastapi import FastAPI, Response, Request, status
+from fastapi import FastAPI, Response, Request, status, Cookie
 from typing import Optional
 from pydantic import BaseModel
 import hashlib
@@ -15,8 +15,8 @@ app.id = 0
 app.persons = []
 templates = Jinja2Templates(directory="templates")
 app.secret_key = "vsd;lgj[op"
-app.access_token_s = ""
-app.access_token_c = ""
+app.access_token_s = []
+app.access_token_c = []
 security = HTTPBasic()
 
 class PersonRequest(BaseModel):
@@ -29,7 +29,8 @@ class PersonResp(BaseModel):
 	surname: str
 	register_date: str
 	vaccination_date: str 
-
+# ac761392d26fed609a2ce39b269b46a6f1fee82956143a3cab616a207ae80b66
+# ac761392d26fed609a2ce39b269b46a6f1fee82956143a3cab616a207ae80b66
 
 @app.post("/login_session")
 def log_session( response: Response, credentials: HTTPBasicCredentials = Depends(security)):
@@ -37,9 +38,10 @@ def log_session( response: Response, credentials: HTTPBasicCredentials = Depends
 		response.status_code = 401
 	else:
 		session_token = sha256(f"{credentials.username}{credentials.password}{app.secret_key}".encode()).hexdigest()
-		app.access_token_c = session_token
+		app.access_token_c.append(session_token)
 		response.status_code = 201
-		response.set_cookie(key="session_token", value="hello")
+		response.set_cookie(key="session_token", value=session_token)
+		return app.access_token_c
 
 
 @app.post("/login_token")
@@ -48,12 +50,35 @@ def log_token(response: Response, credentials: HTTPBasicCredentials = Depends(se
 		response.status_code = 401
 	else:
 		session_token = sha256(f"{credentials.username}{credentials.password}{app.secret_key}".encode()).hexdigest()
-		app.session_token_s = session_token
+		app.access_token_s.append(session_token)
 		response.status_code = 201
 		return {"token": session_token}
 
 
+@app.get("/welcome_session")
+def welcome_session(request: Request, response: Response, format: Optional[str] = None, session_token: str = Cookie(None)):
+	if session_token not in app.access_token_c:
+		raise HTTPException(status_code=401, detail="Unathorised")
+	else:
+		if format == "json":
+			return {"message": "Welcome!"}
+		elif format == "html":
+			return templates.TemplateResponse("hello.html.j2", {"request": request})
+		else:
+			return "Welcome!"
 
+
+@app.get("/welcome_token")
+def welcome_token(request: Request, response: Response,token: str, format: Optional[str] = None):
+	if token not in app.access_token_s:
+		raise HTTPException(status_code=401, detail="Unathorised")
+	else:
+		if format == "json":
+			return {"message": "Welcome!"}
+		elif format == "html":
+			return templates.TemplateResponse("hello.html.j2", {"request": request})
+		else:
+			return "Welcome!"
 
 
 
