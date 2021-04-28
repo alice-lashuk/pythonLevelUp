@@ -55,7 +55,7 @@ def log_token(response: Response, credentials: HTTPBasicCredentials = Depends(se
 
 
 @app.get("/welcome_session")
-def welcome_session(request: Request, response: Response, format: Optional[str] = plain, session_token: str = Cookie(None)):
+def welcome_session(request: Request, response: Response, format: Optional[str] = "plain", session_token: str = Cookie(None)):
 	if session_token not in app.access_token_c:
 		raise HTTPException(status_code=401, detail="Unathorised")
 	else:
@@ -69,7 +69,7 @@ def welcome_session(request: Request, response: Response, format: Optional[str] 
 
 
 @app.get("/welcome_token")
-def welcome_token(request: Request, response: Response,token: str, format: Optional[str] = plain):
+def welcome_token(request: Request, response: Response,token: str, format: Optional[str] = "plain"):
 	if token not in app.access_token_s:
 		raise HTTPException(status_code=401, detail="Unathorised")
 	else:
