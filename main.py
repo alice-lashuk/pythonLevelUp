@@ -38,6 +38,7 @@ def log_session( response: Response, credentials: HTTPBasicCredentials = Depends
 	else:
 		session_token = sha256(f"{credentials.username}{credentials.password}{app.secret_key}".encode()).hexdigest()
 		app.access_token_c = session_token
+		response.status_code = 201
 		response.set_cookie(key="session_token", value="hello")
 
 
@@ -48,6 +49,7 @@ def log_token(response: Response, credentials: HTTPBasicCredentials = Depends(se
 	else:
 		session_token = sha256(f"{credentials.username}{credentials.password}{app.secret_key}".encode()).hexdigest()
 		app.session_token_s = session_token
+		response.status_code = 201
 		return {"token": session_token}
 
 
