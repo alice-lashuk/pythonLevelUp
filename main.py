@@ -1,13 +1,15 @@
 
-from fastapi import FastAPI, Response, status
+from fastapi import FastAPI, Response, Request, status
 from typing import Optional
 from pydantic import BaseModel
 import hashlib
 from datetime import datetime, timedelta
+from fastapi.templating import Jinja2Templates
 
 app = FastAPI()
 app.id = 0
 app.persons = []
+templates = Jinja2Templates(directory="templates")
 
 class PersonRequest(BaseModel):
     name: str
@@ -19,6 +21,11 @@ class PersonResp(BaseModel):
 	surname: str
 	register_date: str
 	vaccination_date: str 
+
+@app.get("/hello")
+def send_date(request: Request):
+	date = datetime.date(datetime.now())
+	return templates.TemplateResponse("template.html.j2", {"request": request, "date": date})
 
 @app.get("/")
 def root():
