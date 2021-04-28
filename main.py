@@ -17,6 +17,7 @@ templates = Jinja2Templates(directory="templates")
 app.secret_key = "vsd;lgj[op"
 app.access_token_s = ""
 app.access_token_c = ""
+security = HTTPBasic()
 
 class PersonRequest(BaseModel):
     name: str
@@ -31,30 +32,23 @@ class PersonResp(BaseModel):
 
 
 @app.post("/login_session")
-def log_session(user: str, password: str, response: Response):
-	if user != "4dm1n" or password != "NotSoSecurePa$$":
-		raise HTTPException(
-			status_code=HTTP_401_UNAUTHORIZED,
-            # detail="Incorrect email or password",
-            # headers={"WWW-Authenticate": "Basic"},
-		)
-	session_token = sha256(f"{user}{password}{app.secret_key}".encode()).hexdigest()
-	app.access_token_c = session_token
-	response.set_cookie(key="session_token", value="hello")
-	return 
+def log_session( response: Response, credentials: HTTPBasicCredentials = Depends(security)):
+	if credentials.username != "4dm1n" or credentials.password != "NotSoSecurePa$$":
+		response.status_code = 401
+	else:
+		session_token = sha256(f"{credentials.username}{credentials.password}{app.secret_key}".encode()).hexdigest()
+		app.access_token_c = session_token
+		response.set_cookie(key="session_token", value="hello")
 
 
 @app.post("/login_token")
-def log_token(user: str, password: str, response: Response):
-	if user != "4dm1n" or password != "NotSoSecurePa$$":
-		raise HTTPException(
-			status_code=HTTP_401_UNAUTHORIZED,
-            # detail="Incorrect email or password",
-            # headers={"WWW-Authenticate": "Basic"},
-		)
-	session_token = sha256(f"{user}{password}{app.secret_key}".encode()).hexdigest()
-	app.session_token_s = session_token
-	return {"token": session_token}
+def log_token(response: Response, credentials: HTTPBasicCredentials = Depends(security)):
+	if credentials.username != "4dm1n" or credentials.password != "NotSoSecurePa$$":
+		response.status_code = 401
+	else:
+		session_token = sha256(f"{credentials.username}{credentials.password}{app.secret_key}".encode()).hexdigest()
+		app.session_token_s = session_token
+		return {"token": session_token}
 
 
 
