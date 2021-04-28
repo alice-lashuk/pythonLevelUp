@@ -3,13 +3,20 @@ from fastapi import FastAPI, Response, Request, status
 from typing import Optional
 from pydantic import BaseModel
 import hashlib
+from hashlib import sha256
 from datetime import datetime, timedelta
 from fastapi.templating import Jinja2Templates
+from fastapi import Depends, FastAPI, HTTPException
+from fastapi.security import HTTPBasic, HTTPBasicCredentials
+from starlette.status import HTTP_401_UNAUTHORIZED
 
 app = FastAPI()
 app.id = 0
 app.persons = []
 templates = Jinja2Templates(directory="templates")
+app.secret_key = "vsd;lgj[op"
+app.access_token_s = ""
+app.access_token_c = ""
 
 class PersonRequest(BaseModel):
     name: str
@@ -21,6 +28,38 @@ class PersonResp(BaseModel):
 	surname: str
 	register_date: str
 	vaccination_date: str 
+
+
+@app.post("/login_session")
+def log_session(user: str, password: str, response: Response):
+	if user != "4dm1n" or password != "NotSoSecurePa$$":
+		raise HTTPException(
+			status_code=HTTP_401_UNAUTHORIZED,
+            # detail="Incorrect email or password",
+            # headers={"WWW-Authenticate": "Basic"},
+		)
+	session_token = sha256(f"{user}{password}{app.secret_key}".encode()).hexdigest()
+	app.access_token_c = session_token
+	response.set_cookie(key="session_token", value="hello")
+	return 
+
+
+@app.post("/login_token")
+def log_token(user: str, password: str, response: Response):
+	if user != "4dm1n" or password != "NotSoSecurePa$$":
+		raise HTTPException(
+			status_code=HTTP_401_UNAUTHORIZED,
+            # detail="Incorrect email or password",
+            # headers={"WWW-Authenticate": "Basic"},
+		)
+	session_token = sha256(f"{user}{password}{app.secret_key}".encode()).hexdigest()
+	app.session_token_s = session_token
+	return {"token": session_token}
+
+
+
+
+
 
 @app.get("/hello")
 def send_date(request: Request):
