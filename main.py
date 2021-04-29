@@ -3,6 +3,7 @@ from fastapi import FastAPI, Response, Request, status, Cookie
 from typing import Optional
 from pydantic import BaseModel
 import hashlib
+from random import random
 from hashlib import sha256
 from datetime import datetime, timedelta
 from fastapi.templating import Jinja2Templates
@@ -36,8 +37,11 @@ def log_session( response: Response, credentials: HTTPBasicCredentials = Depends
 	if credentials.username != "4dm1n" or credentials.password != "NotSoSecurePa$$":
 		response.status_code = 401
 	else:
-		session_token = sha256(f"{credentials.username}{credentials.password}{app.secret_key}".encode()).hexdigest()
+		random_num = random()
+		session_token = sha256(f"{credentials.username}{credentials.password}{app.secret_key}{random_num}".encode()).hexdigest()
 		if session_token not in app.access_token_c:
+			if (len(app.access_token_c) > 2):
+				app.access_token_c.pop(0)
 			app.access_token_c.append(session_token)
 		response.status_code = 201
 		response.set_cookie(key="session_token", value=session_token)
@@ -49,8 +53,11 @@ def log_token(response: Response, credentials: HTTPBasicCredentials = Depends(se
 	if credentials.username != "4dm1n" or credentials.password != "NotSoSecurePa$$":
 		response.status_code = 401
 	else:
-		session_token = sha256(f"{credentials.username}{credentials.password}{app.secret_key}".encode()).hexdigest()
+		random_num = random()
+		session_token = sha256(f"{credentials.username}{credentials.password}{app.secret_key}{random_num}".encode()).hexdigest()
 		if session_token not in app.access_token_s:
+			if (len(app.access_token_s) > 2):
+				app.access_token_s.pop(0)
 			app.access_token_s.append(session_token)
 		response.status_code = 201
 		return {"token": session_token}
@@ -183,7 +190,6 @@ def get_person_by_id(id: str, response: Response):
 	if new_id < 0:
 		response.status_code = 400
 	else:
-		# if len(app.persons) < 1:
 		if not app.persons:
 			response.status_code = 404
 		else:
