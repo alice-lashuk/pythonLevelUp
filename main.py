@@ -9,7 +9,7 @@ from fastapi.templating import Jinja2Templates
 from fastapi import Depends, FastAPI, HTTPException
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
 from starlette.status import HTTP_401_UNAUTHORIZED
-from fastapi.responses import PlainTextResponse
+from fastapi.responses import PlainTextResponse, RedirectResponse
 
 app = FastAPI()
 app.id = 0
@@ -37,7 +37,8 @@ def log_session( response: Response, credentials: HTTPBasicCredentials = Depends
 		response.status_code = 401
 	else:
 		session_token = sha256(f"{credentials.username}{credentials.password}{app.secret_key}".encode()).hexdigest()
-		app.access_token_c.append(session_token)
+		if session_token not in app.access_token_c:
+			app.access_token_c.append(session_token)
 		response.status_code = 201
 		response.set_cookie(key="session_token", value=session_token)
 		return app.access_token_c
@@ -49,13 +50,40 @@ def log_token(response: Response, credentials: HTTPBasicCredentials = Depends(se
 		response.status_code = 401
 	else:
 		session_token = sha256(f"{credentials.username}{credentials.password}{app.secret_key}".encode()).hexdigest()
-		app.access_token_s.append(session_token)
+		if session_token not in app.access_token_s:
+			app.access_token_s.append(session_token)
 		response.status_code = 201
 		return {"token": session_token}
 
+@app.delete("/logout_session")
+def logout_session(request: Request, response: Response, format: Optional[str] = "plain", session_token: str = Cookie(None)):
+	if session_token not in app.access_token_c:
+		raise HTTPException(status_code=401, detail="Unathorised")
+	else:
+		app.access_token_c.remove(session_token)
+		return RedirectResponse(url=f"/logged_out?format={format}", status_code=303)
+
+@app.delete("/logout_token")
+def logout_token(request: Request, response: Response, token: str, format: Optional[str] = "plain"):
+	if token not in app.access_token_s:
+		raise HTTPException(status_code=401, detail="Unathorised")
+	else:
+		app.access_token_s.remove(token)
+		return RedirectResponse(url=f"/logged_out?format={format}", status_code=303)
+
+@app.get("/logged_out")
+def logged_out(request: Request,response: Response, format: str):
+	if format == "json":
+		return {"message": "Logged out!"}
+	elif format == "html":
+		return templates.TemplateResponse("logged_out.html.j2", {"request": request})
+	else:
+		msg = 'Logged out!'
+		return Response(content=msg, media_type="application/plain")
+
 
 @app.get("/welcome_session")
-def welcome_session(request: Request, response: Response, format: Optional[str] = "plain", session_token: str = Cookie(None)):
+def welcome_session(request: Request, response: Response, format: Optional[str] = None, session_token: str = Cookie(None)):
 	if session_token not in app.access_token_c:
 		raise HTTPException(status_code=401, detail="Unathorised")
 	else:
@@ -69,7 +97,7 @@ def welcome_session(request: Request, response: Response, format: Optional[str] 
 
 
 @app.get("/welcome_token")
-def welcome_token(request: Request, response: Response,token: str, format: Optional[str] = "plain"):
+def welcome_token(request: Request, response: Response,token: str, format: Optional[str] = None):
 	if token not in app.access_token_s:
 		raise HTTPException(status_code=401, detail="Unathorised")
 	else:
