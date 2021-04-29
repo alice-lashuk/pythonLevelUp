@@ -61,7 +61,7 @@ def logout_session(request: Request, response: Response, format: Optional[str] =
 		raise HTTPException(status_code=401, detail="Unathorised")
 	else:
 		app.access_token_c.remove(session_token)
-		return RedirectResponse(url=f"/logged_out?format={format}", status_code=303)
+		return RedirectResponse(url=f"/logged_out?format={format}", status_code=302)
 
 @app.delete("/logout_token")
 def logout_token(request: Request, response: Response, token: str, format: Optional[str] = "plain"):
@@ -69,7 +69,7 @@ def logout_token(request: Request, response: Response, token: str, format: Optio
 		raise HTTPException(status_code=401, detail="Unathorised")
 	else:
 		app.access_token_s.remove(token)
-		return RedirectResponse(url=f"/logged_out?format={format}", status_code=303)
+		return RedirectResponse(url=f"/logged_out?format={format}", status_code=302)
 
 @app.get("/logged_out")
 def logged_out(request: Request,response: Response, format: str):
