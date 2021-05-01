@@ -15,8 +15,8 @@ import random
 # http://4dm1n:NotSoSecurePa$$@127.0.0.1:8000/
 USERNAME = "4dm1n"
 PASSWORD = "NotSoSecurePa$$"
-SESSIONS_STORED = 1
-# SESSIONS_STORED = 3
+# SESSIONS_STORED = 1
+SESSIONS_STORED = 3
 
 app = FastAPI()
 app.id = 0
@@ -43,7 +43,7 @@ class PersonResp(BaseModel):
 def valid_credentials(credentials: HTTPBasicCredentials):
 	return credentials.username == USERNAME and credentials.password == PASSWORD
 
-def generate_token(credentials: HTTPBasicCredentials, randomize: bool = False):
+def generate_token(credentials: HTTPBasicCredentials, randomize: bool = True):
 	seed = credentials.username + credentials.password + (str(random.randint(0, 1000)) if randomize else "")
 	return sha256(seed.encode()).hexdigest()
 
