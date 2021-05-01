@@ -15,8 +15,8 @@ import random
 # http://4dm1n:NotSoSecurePa$$@127.0.0.1:8000/
 USERNAME = "4dm1n"
 PASSWORD = "NotSoSecurePa$$"
-# SESSIONS_STORED = 1
-SESSIONS_STORED = 3
+SESSIONS_STORED = 1
+# SESSIONS_STORED = 3
 
 app = FastAPI()
 app.id = 0
@@ -40,11 +40,28 @@ class PersonResp(BaseModel):
 	register_date: str
 	vaccination_date: str 
 
+def request_str(request: Request):
+	return """
+Request:
+	method - '{method}'
+	url - '{url}'
+	query - '{query}'
+	cookies - '{cookies}'
+	""".format(
+			method=request.method,
+			url=request.url,
+			query=request.query_params,
+			cookies=request.cookies
+		)
+
+def log_request(request: Request):
+	print(request_str(request))
+
 
 def valid_credentials(credentials: HTTPBasicCredentials):
 	return credentials.username == USERNAME and credentials.password == PASSWORD
 
-def generate_token(credentials: HTTPBasicCredentials, randomize: bool = True):
+def generate_token(credentials: HTTPBasicCredentials, randomize: bool = False):
 	seed = credentials.username + credentials.password + (str(random.randint(0, 1000)) if randomize else "")
 	return sha256(seed.encode()).hexdigest()
 
@@ -73,20 +90,22 @@ def welcome(token_store: [], token: str, format: str):
 		raise HTTPException(status_code=401, detail="Unathorised welcome")
 
 
-# @app.post("/login_session")
-# def log_session( response: Response, credentials: HTTPBasicCredentials = Depends(security)):
-# 	if valid_credentials(credentials):
-# 		token = generate_token(credentials)
-# 		store_token(app.cookie_tokens, token)
-# 		response.status_code = 201
-# 		response.set_cookie(key="session_token", value=token)
-# 		return app.cookie_tokens
-# 	else:
-# 		response.status_code = 401		
+@app.post("/login_session")
+def log_session(request: Request, response: Response, credentials: HTTPBasicCredentials = Depends(security)):
+	log_request(request)
+	if valid_credentials(credentials):
+		token = generate_token(credentials)
+		store_token(app.cookie_tokens, token)
+		response.status_code = 201
+		response.set_cookie(key="session_token", value=token)
+		return app.cookie_tokens
+	else:
+		response.status_code = 401		
 
 
 @app.post("/login_token")
-def log_token(response: Response, credentials: HTTPBasicCredentials = Depends(security)):
+def log_token(request: Request, response: Response, credentials: HTTPBasicCredentials = Depends(security)):
+	log_request(request)
 	if valid_credentials(credentials):
 		token = generate_token(credentials)
 		store_token(app.session_tokens, token)
@@ -95,16 +114,19 @@ def log_token(response: Response, credentials: HTTPBasicCredentials = Depends(se
 	else:
 		response.status_code = 401	
 
-# @app.delete("/logout_session")
-# def logout_session(request: Request, response: Response, format: Optional[str] = "plain", session_token: str = Cookie(None)):
-# 	return logout(app.cookie_tokens, session_token, format)
+@app.delete("/logout_session")
+def logout_session(request: Request, response: Response, format: Optional[str] = "plain", session_token: str = Cookie(None)):
+	log_request(request)	
+	return logout(app.cookie_tokens, session_token, format)
 
 @app.delete("/logout_token")
 def logout_token(request: Request, response: Response, token: str, format: Optional[str] = "plain"):
+	log_request(request)
 	return logout(app.session_tokens, token, format)
 
 @app.get("/logged_out")
 def logged_out(request: Request,response: Response, format: str):
+	log_request(request)
 	if format == "json":
 		return JSONResponse(content={"message": "Logged out!"}, status_code=200)
 	elif format == "html":
@@ -113,13 +135,15 @@ def logged_out(request: Request,response: Response, format: str):
 		return PlainTextResponse(content="Logged out!", status_code=200)
 
 
-# @app.get("/welcome_session")
-# def welcome_session(format: Optional[str] = None, session_token: str = Cookie(None)):
-# 	return welcome(app.cookie_tokens, session_token, format)
+@app.get("/welcome_session")
+def welcome_session(request: Request, format: Optional[str] = None, session_token: str = Cookie(None)):
+	log_request(request)
+	return welcome(app.cookie_tokens, session_token, format)
 
 
 @app.get("/welcome_token")
-def welcome_token(token: str, format: Optional[str] = None):
+def welcome_token(request: Request, token: str, format: Optional[str] = None):
+	log_request(request)
 	return welcome(app.session_tokens, token, format)
 
 @app.get("/reset")
@@ -137,9 +161,11 @@ def send_date(request: Request):
 	date = datetime.date(datetime.now())
 	return templates.TemplateResponse("template.html.j2", {"request": request, "date": date})
 
+
+
 @app.get("/")
-def root():
-	print("log_message")
+def root(request: Request):
+	print(request_str(request))
 	return {"message": "Hello world!"}
 
 @app.get("/method")
