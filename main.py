@@ -15,7 +15,8 @@ import random
 # http://4dm1n:NotSoSecurePa$$@127.0.0.1:8000/
 USERNAME = "4dm1n"
 PASSWORD = "NotSoSecurePa$$"
-SESSIONS_STORED = 3
+SESSIONS_STORED = 1
+# SESSIONS_STORED = 3
 
 app = FastAPI()
 app.id = 0
@@ -44,7 +45,8 @@ def valid_credentials(credentials: HTTPBasicCredentials = Depends(security)):
 
 def generate_token(credentials):
 	random_val = str(random.randint(0, 1000))
-	token = sha256(f"{credentials.username}{credentials.password}{random_val}".encode()).hexdigest()
+	token = sha256(f"{credentials.username}{credentials.password}".encode()).hexdigest()
+	# token = sha256(f"{credentials.username}{credentials.password}{random_val}".encode()).hexdigest()
 	return token
 
 def store_token(token_store: [], token: str):
