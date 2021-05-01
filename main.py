@@ -127,6 +127,10 @@ def reset():
 	app.cookie_tokens = []
 	return PlainTextResponse(content="OK", status_code=200)
 
+@app.get("/sessions")
+def get_sessions():
+	return {"sessions_tokens": app.session_tokens, "cookie_tokes": app.cookie_tokens}
+
 @app.get("/hello")
 def send_date(request: Request):
 	date = datetime.date(datetime.now())
