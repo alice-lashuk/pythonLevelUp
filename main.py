@@ -40,6 +40,7 @@ class PersonResp(BaseModel):
 	register_date: str
 	vaccination_date: str 
 
+
 def valid_credentials(credentials: HTTPBasicCredentials):
 	return credentials.username == USERNAME and credentials.password == PASSWORD
 
@@ -72,16 +73,16 @@ def welcome(token_store: [], token: str, format: str):
 		raise HTTPException(status_code=401, detail="Unathorised welcome")
 
 
-@app.post("/login_session")
-def log_session( response: Response, credentials: HTTPBasicCredentials = Depends(security)):
-	if valid_credentials(credentials):
-		token = generate_token(credentials)
-		store_token(app.cookie_tokens, token)
-		response.status_code = 201
-		response.set_cookie(key="session_token", value=token)
-		return app.cookie_tokens
-	else:
-		response.status_code = 401		
+# @app.post("/login_session")
+# def log_session( response: Response, credentials: HTTPBasicCredentials = Depends(security)):
+# 	if valid_credentials(credentials):
+# 		token = generate_token(credentials)
+# 		store_token(app.cookie_tokens, token)
+# 		response.status_code = 201
+# 		response.set_cookie(key="session_token", value=token)
+# 		return app.cookie_tokens
+# 	else:
+# 		response.status_code = 401		
 
 
 @app.post("/login_token")
@@ -94,9 +95,9 @@ def log_token(response: Response, credentials: HTTPBasicCredentials = Depends(se
 	else:
 		response.status_code = 401	
 
-@app.delete("/logout_session")
-def logout_session(request: Request, response: Response, format: Optional[str] = "plain", session_token: str = Cookie(None)):
-	return logout(app.cookie_tokens, session_token, format)
+# @app.delete("/logout_session")
+# def logout_session(request: Request, response: Response, format: Optional[str] = "plain", session_token: str = Cookie(None)):
+# 	return logout(app.cookie_tokens, session_token, format)
 
 @app.delete("/logout_token")
 def logout_token(request: Request, response: Response, token: str, format: Optional[str] = "plain"):
@@ -112,9 +113,9 @@ def logged_out(request: Request,response: Response, format: str):
 		return PlainTextResponse(content="Logged out!", status_code=200)
 
 
-@app.get("/welcome_session")
-def welcome_session(format: Optional[str] = None, session_token: str = Cookie(None)):
-	return welcome(app.cookie_tokens, session_token, format)
+# @app.get("/welcome_session")
+# def welcome_session(format: Optional[str] = None, session_token: str = Cookie(None)):
+# 	return welcome(app.cookie_tokens, session_token, format)
 
 
 @app.get("/welcome_token")
