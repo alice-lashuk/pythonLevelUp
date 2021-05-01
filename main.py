@@ -139,7 +139,8 @@ def send_date(request: Request):
 
 @app.get("/")
 def root():
-    return {"message": "Hello world!"}
+	print("log_message")
+	return {"message": "Hello world!"}
 
 @app.get("/method")
 def root():
