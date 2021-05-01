@@ -116,9 +116,9 @@ def welcome_session(format: Optional[str] = None, session_token: str = Cookie(No
 	return welcome(app.cookie_tokens, session_token, format)
 
 
-@app.get("/welcome_token")
-def welcome_token(token: str, format: Optional[str] = None):
-	return welcome(app.session_tokens, token, format)
+# @app.get("/welcome_token")
+# def welcome_token(token: str, format: Optional[str] = None):
+# 	return welcome(app.session_tokens, token, format)
 
 
 
