@@ -121,7 +121,11 @@ def welcome_session(format: Optional[str] = None, session_token: str = Cookie(No
 def welcome_token(token: str, format: Optional[str] = None):
 	return welcome(app.session_tokens, token, format)
 
-
+@app.get("/reset")
+def reset():
+	app.session_tokens = []
+	app.cookie_tokens = []
+	return PlainTextResponse(content="OK", status_code=200)
 
 @app.get("/hello")
 def send_date(request: Request):
