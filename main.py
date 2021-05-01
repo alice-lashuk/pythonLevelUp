@@ -40,14 +40,12 @@ class PersonResp(BaseModel):
 	register_date: str
 	vaccination_date: str 
 
-def valid_credentials(credentials: HTTPBasicCredentials = Depends(security)):
+def valid_credentials(credentials: HTTPBasicCredentials):
 	return credentials.username == USERNAME and credentials.password == PASSWORD
 
-def generate_token(credentials):
-	random_val = str(random.randint(0, 1000))
-	token = sha256(f"{credentials.username}{credentials.password}".encode()).hexdigest()
-	# token = sha256(f"{credentials.username}{credentials.password}{random_val}".encode()).hexdigest()
-	return token
+def generate_token(credentials: HTTPBasicCredentials, randomize: bool = False):
+	seed = credentials.username + credentials.password + (str(random.randint(0, 1000)) if randomize else "")
+	return sha256(seed.encode()).hexdigest()
 
 def store_token(token_store: [], token: str):
 	if token not in token_store:
