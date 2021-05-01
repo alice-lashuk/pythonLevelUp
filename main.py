@@ -3,7 +3,6 @@ from fastapi import FastAPI, Response, Request, status, Cookie
 from typing import Optional
 from pydantic import BaseModel
 import hashlib
-from random import random
 from hashlib import sha256
 from datetime import datetime, timedelta
 from fastapi.templating import Jinja2Templates
@@ -11,6 +10,7 @@ from fastapi import Depends, FastAPI, HTTPException
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
 from starlette.status import HTTP_401_UNAUTHORIZED
 from fastapi.responses import PlainTextResponse, RedirectResponse
+from random import randint
 
 app = FastAPI()
 app.id = 0
@@ -37,8 +37,8 @@ def log_session( response: Response, credentials: HTTPBasicCredentials = Depends
 	if credentials.username != "4dm1n" or credentials.password != "NotSoSecurePa$$":
 		response.status_code = 401
 	else:
-		random_val = str(random.randint(0, 1000))
-		session_token = sha256(f"{credentials.username}{credentials.password}{app.secret_key}{random_val}".encode()).hexdigest()
+		random_val = str(randint(0, 1000))
+		session_token = sha256(f"{credentials.username}{credentials.password}{random_val}".encode()).hexdigest()
 		if session_token not in app.access_token_c:
 			if (len(app.access_token_c) > 2):
 				app.access_token_c.pop(0)
@@ -53,8 +53,8 @@ def log_token(response: Response, credentials: HTTPBasicCredentials = Depends(se
 	if credentials.username != "4dm1n" or credentials.password != "NotSoSecurePa$$":
 		response.status_code = 401
 	else:
-		random_val = str(random.randint(0, 1000))
-		session_token = sha256(f"{credentials.username}{credentials.password}{app.secret_key}{random_val}".encode()).hexdigest()
+		random_val = str(randint(0, 1000))
+		session_token = sha256(f"{credentials.username}{credentials.password}{random_val}".encode()).hexdigest()
 		if session_token not in app.access_token_s:
 			if (len(app.access_token_s) > 2):
 				app.access_token_s.pop(0)
