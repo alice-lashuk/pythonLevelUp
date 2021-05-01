@@ -10,7 +10,7 @@ from fastapi import Depends, FastAPI, HTTPException
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
 from starlette.status import HTTP_401_UNAUTHORIZED
 from fastapi.responses import PlainTextResponse, RedirectResponse
-from random
+import random
 
 app = FastAPI()
 app.id = 0
@@ -19,7 +19,7 @@ templates = Jinja2Templates(directory="templates")
 app.secret_key = "vsd;lgj[op"
 app.access_token_s = []
 app.access_token_c = []
-random.seed(datetime.datetime.now())
+random.seed(datetime.now())
 security = HTTPBasic()
 
 class PersonRequest(BaseModel):
@@ -87,7 +87,6 @@ def logged_out(request: Request,response: Response, format: str):
 		return templates.TemplateResponse("logged_out.html.j2", {"request": request})
 	else:
 		return PlainTextResponse(content="Welcome!", status_code=200)
-
 
 @app.get("/welcome_session")
 def welcome_session(request: Request, response: Response, format: Optional[str] = None, session_token: str = Cookie(None)):
