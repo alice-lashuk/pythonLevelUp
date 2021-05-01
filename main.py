@@ -10,7 +10,7 @@ from fastapi import Depends, FastAPI, HTTPException
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
 from starlette.status import HTTP_401_UNAUTHORIZED
 from fastapi.responses import PlainTextResponse, RedirectResponse
-from random import randint
+from random
 
 app = FastAPI()
 app.id = 0
@@ -19,6 +19,7 @@ templates = Jinja2Templates(directory="templates")
 app.secret_key = "vsd;lgj[op"
 app.access_token_s = []
 app.access_token_c = []
+random.seed(datetime.datetime.now())
 security = HTTPBasic()
 
 class PersonRequest(BaseModel):
@@ -37,7 +38,7 @@ def log_session( response: Response, credentials: HTTPBasicCredentials = Depends
 	if credentials.username != "4dm1n" or credentials.password != "NotSoSecurePa$$":
 		response.status_code = 401
 	else:
-		random_val = str(randint(0, 1000))
+		random_val = str(random.randint(0, 1000))
 		session_token = sha256(f"{credentials.username}{credentials.password}{random_val}".encode()).hexdigest()
 		if session_token not in app.access_token_c:
 			if (len(app.access_token_c) > 2):
@@ -53,7 +54,7 @@ def log_token(response: Response, credentials: HTTPBasicCredentials = Depends(se
 	if credentials.username != "4dm1n" or credentials.password != "NotSoSecurePa$$":
 		response.status_code = 401
 	else:
-		random_val = str(randint(0, 1000))
+		random_val = str(random.randint(0, 1000))
 		session_token = sha256(f"{credentials.username}{credentials.password}{random_val}".encode()).hexdigest()
 		if session_token not in app.access_token_s:
 			if (len(app.access_token_s) > 2):
