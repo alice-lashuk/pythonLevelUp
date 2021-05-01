@@ -12,6 +12,10 @@ from starlette.status import HTTP_401_UNAUTHORIZED
 from fastapi.responses import PlainTextResponse, RedirectResponse, HTMLResponse, JSONResponse
 import random
 
+USERNAME = "4dm1n"
+PASSWORD = "NotSoSecurePa$$"
+SESSIONS_STORED = 3
+
 app = FastAPI()
 app.id = 0
 app.persons = []
@@ -21,6 +25,7 @@ app.session_tokens = []
 app.cookie_tokens = []
 random.seed(datetime.now())
 security = HTTPBasic()
+
 
 class PersonRequest(BaseModel):
     name: str
@@ -34,8 +39,7 @@ class PersonResp(BaseModel):
 	vaccination_date: str 
 
 def valid_credentials(credentials: HTTPBasicCredentials = Depends(security)):
-	return credentials.username == "a" and credentials.password == "b"
-	# return credentials.username == "4dm1n" and credentials.password == "NotSoSecurePa$$"
+	return credentials.username == USERNAME and credentials.password == PASSWORD
 
 def generate_token(credentials):
 	random_val = str(random.randint(0, 1000))
@@ -44,7 +48,7 @@ def generate_token(credentials):
 
 def store_token(token_store: [], token: str):
 	if token not in token_store:
-		if (len(token_store) > 2):
+		if (len(token_store) >= SESSIONS_STORED):
 			token_store.pop(0)
 		token_store.append(token)
 
