@@ -111,14 +111,14 @@ def logged_out(request: Request,response: Response, format: str):
 		return PlainTextResponse(content="Logged out!", status_code=200)
 
 
-@app.get("/welcome_session")
-def welcome_session(format: Optional[str] = None, session_token: str = Cookie(None)):
-	return welcome(app.cookie_tokens, session_token, format)
+# @app.get("/welcome_session")
+# def welcome_session(format: Optional[str] = None, session_token: str = Cookie(None)):
+# 	return welcome(app.cookie_tokens, session_token, format)
 
 
-# @app.get("/welcome_token")
-# def welcome_token(token: str, format: Optional[str] = None):
-# 	return welcome(app.session_tokens, token, format)
+@app.get("/welcome_token")
+def welcome_token(token: str, format: Optional[str] = None):
+	return welcome(app.session_tokens, token, format)
 
 
 
