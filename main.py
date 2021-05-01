@@ -37,8 +37,8 @@ def log_session( response: Response, credentials: HTTPBasicCredentials = Depends
 	if credentials.username != "4dm1n" or credentials.password != "NotSoSecurePa$$":
 		response.status_code = 401
 	else:
-		random_num = random()
-		session_token = sha256(f"{credentials.username}{credentials.password}{app.secret_key}{random_num}".encode()).hexdigest()
+		random_val = str(random.randint(0, 1000))
+		session_token = sha256(f"{credentials.username}{credentials.password}{app.secret_key}{random_val}".encode()).hexdigest()
 		if session_token not in app.access_token_c:
 			if (len(app.access_token_c) > 2):
 				app.access_token_c.pop(0)
@@ -53,8 +53,8 @@ def log_token(response: Response, credentials: HTTPBasicCredentials = Depends(se
 	if credentials.username != "4dm1n" or credentials.password != "NotSoSecurePa$$":
 		response.status_code = 401
 	else:
-		random_num = random()
-		session_token = sha256(f"{credentials.username}{credentials.password}{app.secret_key}{random_num}".encode()).hexdigest()
+		random_val = str(random.randint(0, 1000))
+		session_token = sha256(f"{credentials.username}{credentials.password}{app.secret_key}{random_val}".encode()).hexdigest()
 		if session_token not in app.access_token_s:
 			if (len(app.access_token_s) > 2):
 				app.access_token_s.pop(0)
@@ -68,7 +68,7 @@ def logout_session(request: Request, response: Response, format: Optional[str] =
 		raise HTTPException(status_code=401, detail="Unathorised")
 	else:
 		app.access_token_c.remove(session_token)
-		return RedirectResponse(url=f"/logged_out?format={format}", status_code=302)
+		return RedirectResponse(url=f"/logged_out?format={format}", status_code=303)
 
 @app.delete("/logout_token")
 def logout_token(request: Request, response: Response, token: str, format: Optional[str] = "plain"):
@@ -76,7 +76,7 @@ def logout_token(request: Request, response: Response, token: str, format: Optio
 		raise HTTPException(status_code=401, detail="Unathorised")
 	else:
 		app.access_token_s.remove(token)
-		return RedirectResponse(url=f"/logged_out?format={format}", status_code=302)
+		return RedirectResponse(url=f"/logged_out?format={format}", status_code=303)
 
 @app.get("/logged_out")
 def logged_out(request: Request,response: Response, format: str):
@@ -85,8 +85,7 @@ def logged_out(request: Request,response: Response, format: str):
 	elif format == "html":
 		return templates.TemplateResponse("logged_out.html.j2", {"request": request})
 	else:
-		msg = 'Logged out!'
-		return Response(content=msg, media_type="application/plain")
+		return PlainTextResponse(content="Welcome!", status_code=200)
 
 
 @app.get("/welcome_session")
@@ -99,12 +98,11 @@ def welcome_session(request: Request, response: Response, format: Optional[str] 
 		elif format == "html":
 			return templates.TemplateResponse("hello.html.j2", {"request": request})
 		else:
-			welcome = 'Welcome!'
-			return Response(content=welcome, media_type="application/plain")
+			return PlainTextResponse(content="Welcome!", status_code=200)
 
 
 @app.get("/welcome_token")
-def welcome_token(request: Request, response: Response,token: str, format: Optional[str] = None):
+def welcome_token(request: Request, response: Response, token: str, format: Optional[str] = None):
 	if token not in app.access_token_s:
 		raise HTTPException(status_code=401, detail="Unathorised")
 	else:
@@ -113,8 +111,7 @@ def welcome_token(request: Request, response: Response,token: str, format: Optio
 		elif format == "html":
 			return templates.TemplateResponse("hello.html.j2", {"request": request})
 		else:
-			welcome = 'Welcome!'
-			return Response(content=welcome, media_type="application/plain")
+			return PlainTextResponse(content="Welcome!", status_code=200)
 
 
 
