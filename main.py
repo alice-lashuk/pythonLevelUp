@@ -9,7 +9,7 @@ from fastapi.templating import Jinja2Templates
 from fastapi import Depends, FastAPI, HTTPException
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
 from starlette.status import HTTP_401_UNAUTHORIZED
-from fastapi.responses import PlainTextResponse, RedirectResponse
+from fastapi.responses import PlainTextResponse, RedirectResponse, HTMLResponse
 import random
 
 app = FastAPI()
@@ -88,29 +88,29 @@ def logged_out(request: Request,response: Response, format: str):
 	else:
 		return PlainTextResponse(content="Welcome!", status_code=200)
 
+
 @app.get("/welcome_session")
-def welcome_session(request: Request, response: Response, format: str = "", session_token: str = Cookie(None)):
+def welcome_session(format: Optional[str] = None, session_token: str = Cookie(None)):
 	if session_token not in app.access_token_c:
 		raise HTTPException(status_code=401, detail="Unathorised")
 	else:
 		if format == "json":
 			return {"message": "Welcome!"}
 		elif format == "html":
-			return templates.TemplateResponse("hello.html.j2", {"request": request})
+			return HTMLResponse(content="<h1>Welcome!</h1>", status_code=200)
 		else:
 			return PlainTextResponse(content="Welcome!", status_code=200)
 
-# Optional[str] = None
 
 @app.get("/welcome_token")
-def welcome_token(request: Request, response: Response, token: str, format: str = ""):
+def welcome_token(token: str, format: Optional[str] = None):
 	if token not in app.access_token_s:
 		raise HTTPException(status_code=401, detail="Unathorised")
 	else:
 		if format == "json":
 			return {"message": "Welcome!"}
 		elif format == "html":
-			return templates.TemplateResponse("hello.html.j2", {"request": request})
+			return HTMLResponse(content="<h1>Welcome!</h1>", status_code=200)
 		else:
 			return PlainTextResponse(content="Welcome!", status_code=200)
 
