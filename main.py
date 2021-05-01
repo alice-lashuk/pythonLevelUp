@@ -89,7 +89,7 @@ def logged_out(request: Request,response: Response, format: str):
 		return PlainTextResponse(content="Welcome!", status_code=200)
 
 @app.get("/welcome_session")
-def welcome_session(request: Request, response: Response, format: Optional[str] = None, session_token: str = Cookie(None)):
+def welcome_session(request: Request, response: Response, format: str = "", session_token: str = Cookie(None)):
 	if session_token not in app.access_token_c:
 		raise HTTPException(status_code=401, detail="Unathorised")
 	else:
@@ -100,9 +100,10 @@ def welcome_session(request: Request, response: Response, format: Optional[str] 
 		else:
 			return PlainTextResponse(content="Welcome!", status_code=200)
 
+# Optional[str] = None
 
 @app.get("/welcome_token")
-def welcome_token(request: Request, response: Response, token: str, format: Optional[str] = None):
+def welcome_token(request: Request, response: Response, token: str, format: str = ""):
 	if token not in app.access_token_s:
 		raise HTTPException(status_code=401, detail="Unathorised")
 	else:
