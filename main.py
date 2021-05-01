@@ -12,6 +12,7 @@ from starlette.status import HTTP_401_UNAUTHORIZED
 from fastapi.responses import PlainTextResponse, RedirectResponse, HTMLResponse, JSONResponse
 import random
 
+# http://4dm1n:NotSoSecurePa$$@127.0.0.1:8000/
 USERNAME = "4dm1n"
 PASSWORD = "NotSoSecurePa$$"
 SESSIONS_STORED = 3
@@ -57,7 +58,7 @@ def logout(token_store: [], token: str, format: str):
 		token_store.remove(token)
 		return RedirectResponse(url=f"/logged_out?format={format}", status_code=303)
 	else:
-		raise HTTPException(status_code=401, detail="Unathorised")
+		raise HTTPException(status_code=401, detail="Unathorised logout")
 
 def welcome(token_store: [], token: str, format: str):
 	if token in token_store:
@@ -68,7 +69,7 @@ def welcome(token_store: [], token: str, format: str):
 		else:
 			return PlainTextResponse(content="Welcome!", status_code=200)
 	else:
-		raise HTTPException(status_code=401, detail="Unathorised")
+		raise HTTPException(status_code=401, detail="Unathorised welcome")
 
 
 @app.post("/login_session")
