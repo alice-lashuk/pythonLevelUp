@@ -154,7 +154,16 @@ def reset():
 
 @app.get("/sessions")
 def get_sessions():
-	return {"sessions_tokens": app.session_tokens, "cookie_tokes": app.cookie_tokens}
+	return {
+		"sessions_tokens": {
+			"data": app.session_tokens,
+			"id": id(app.session_tokens)
+		}, 
+		"cookie_tokes": {
+			"data": app.cookie_tokens,
+			"id": id(app.cookie_tokens)
+		}
+	}
 
 @app.get("/hello")
 def send_date(request: Request):
