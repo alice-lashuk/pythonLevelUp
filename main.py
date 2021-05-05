@@ -28,6 +28,7 @@ app.session_tokens = []
 app.cookie_tokens = []
 random.seed(datetime.now())
 security = HTTPBasic()
+app.acceptable_order = ["first_name", "last_name", "city"]
 
 
 @app.on_event("startup")
@@ -61,22 +62,20 @@ async def get_product(id: str,):
 	if data == None:
 		raise HTTPException(status_code=404, detail="Product not found")
 	return {"id": data['ProductID'], "name": data['ProductName']}
-# 	{
-#     "customers": [
-#         {
-#             "id": "ALFKI",
-#             "name": "Alfreds Futterkiste",
-#             "full_address":  "Obere Str. 57 12209 Berlin Germany",
-#         },
-#         [...]
-#      ]
-# }
 
-
-
-
-
-
+@app.get("/employees")
+async def get_emplpyees(limit: int, offset: int, order: str):
+	if order not in app.acceptable_order:
+		raise HTTPException(status_code=400, detail="Chnage order value")
+	if order == "first_name":
+		order = "FirstName"
+	elif order == last_name:
+		order == "LastName"
+	elif order == city:
+		order = "City"
+	app.db_connection.row_factory = sqlite3.Row
+	data = app.db_connection.execute("SELECT EmployeeID, LastName, FirstName, City FROM Employees ORDER BY ? LIMIT ?,?",(order,limit, offset,)).fetchall()
+	return {"employees":[{"id": x["EmployeeID"], "last_name": x["LastName"], "first_name": x["FirstName"], "city": x["City"]} for x in data]}
 
 
 
