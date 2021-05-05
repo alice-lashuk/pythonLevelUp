@@ -69,12 +69,11 @@ async def get_product(id: str,):
 async def get_product_extended():
 	app.db_connection.row_factory = sqlite3.Row
 	data = app.db_connection.execute('''
-		SELECT ProductID, ProductName, CategoryName, CompanyName FROM Products
-		LEFT JOIN Categories on Products.ProductID = Categories.CategoryID
-		LEFT JOIN Suppliers S on Products.SupplierID = S.SupplierID
-		ORDER BY ProductID
+		SELECT  ProductID, ProductName, Products.CategoryID, CompanyName, (SELECT CategoryName from Categories as C
+where C.CategoryID = Products.CategoryID) as CategoryN FROM Products
+JOIN Suppliers S on Products.SupplierID = S.SupplierID;
 		''').fetchall()
-	return {"products_extended":[{"id": x["ProductID"], "name": x["ProductName"], "category": x["CategoryName"], "supplier": x["CompanyName"]} for x in data]}
+	return {"products_extended":[{"id": x["ProductID"], "name": x["ProductName"], "category": x["CategoryN"], "supplier": x["CompanyName"]} for x in data]}
 
 @app.get("/employees")
 async def get_emplpyees(offset: Optional[int] = None, order: Optional[str] = None, limit: Optional[int] = None):
