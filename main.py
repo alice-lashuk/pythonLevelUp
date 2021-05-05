@@ -45,13 +45,14 @@ async def shutdown():
 @app.get("/categories")
 async def get_categories():
 	app.db_connection.row_factory = sqlite3.Row
-	data = app.db_connection.execute("SELECT CategoryID, CategoryName FROM Categories ORDER BY CategoryID;").fetchall()
+	data = app.db_connection.execute("SELECT DISTINCT CategoryID, CategoryName FROM Categories ORDER BY CategoryID").fetchall()
+	# return data
 	return {"categories" :[{"id": f"{x['CategoryID']}".strip(), "name": f"{x['CategoryName']}".strip()} for x in data]}
 
 @app.get("/customers")
 async def get_customers():
 	app.db_connection.row_factory = sqlite3.Row
-	data = app.db_connection.execute("SELECT CustomerID, CompanyName, Address, PostalCode, City, Country FROM Customers ORDER BY CustomerID;").fetchall()
+	data = app.db_connection.execute("SELECT DISTINCT CustomerID, CompanyName, Address, PostalCode, City, Country FROM Customers ORDER BY CustomerID").fetchall()
 	return {"customers" :[{"id": f"{x['CustomerID']}".strip(), "name": x["CompanyName"].strip(), "full_address": f"{x['Address']} {x['PostalCode']} {x['City']} {x['Country']}".strip()} for x in data]}
 
 
@@ -62,6 +63,18 @@ async def get_product(id: str,):
 	if data == None:
 		raise HTTPException(status_code=404, detail="Product not found")
 	return {"id": data['ProductID'], "name": data['ProductName']}
+
+
+@app.get("/products_extended")
+async def get_product_extended():
+	app.db_connection.row_factory = sqlite3.Row
+	data = app.db_connection.execute('''
+		SELECT ProductID, ProductName, CategoryName, CompanyName FROM Products
+		JOIN Categories on Products.ProductID = Categories.CategoryID
+		JOIN Suppliers S on Products.SupplierID = S.SupplierID
+		ORDER BY ProductID
+		''').fetchall()
+	return {"products_extended":[{"id": x["ProductID"], "name": x["ProductName"], "category": x["CategoryName"], "supplier": x["CompanyName"]} for x in data]}
 
 @app.get("/employees")
 async def get_emplpyees(offset: Optional[int] = None, order: Optional[str] = None, limit: Optional[int] = None):
@@ -76,21 +89,21 @@ async def get_emplpyees(offset: Optional[int] = None, order: Optional[str] = Non
 		order = "City"
 	app.db_connection.row_factory = sqlite3.Row
 	if offset is None and limit is None and order is None:
-		data = app.db_connection.execute("SELECT EmployeeID, LastName, FirstName, City FROM Employees").fetchall()
+		data = app.db_connection.execute("SELECT  EmployeeID, LastName, FirstName, City FROM Employees").fetchall()
 	elif offset is None and order is None:
-		data = app.db_connection.execute("SELECT EmployeeID, LastName, FirstName, City FROM Employees LIMIT ?",(limit,)).fetchall()
+		data = app.db_connection.execute("SELECT  EmployeeID, LastName, FirstName, City FROM Employees LIMIT ?",(limit,)).fetchall()
 	elif limit is None and order is None:
-		data = app.db_connection.execute("SELECT EmployeeID, LastName, FirstName, City FROM Employees LIMIT -1 OFFSET ?",(offset,)).fetchall()
+		data = app.db_connection.execute("SELECT  EmployeeID, LastName, FirstName, City FROM Employees LIMIT -1 OFFSET ?",(offset,)).fetchall()
 	elif limit is None and offset is None:
-				data = app.db_connection.execute("SELECT EmployeeID, LastName, FirstName, City FROM Employees ORDER BY ?",(order,)).fetchall()
+				data = app.db_connection.execute("SELECT  EmployeeID, LastName, FirstName, City FROM Employees ORDER BY ?",(order,)).fetchall()
 	elif order is None:
-		data = app.db_connection.execute("SELECT EmployeeID, LastName, FirstName, City FROM Employees LIMIT ? OFFSET ?",(limit, offset,)).fetchall()
+		data = app.db_connection.execute("SELECT  EmployeeID, LastName, FirstName, City FROM Employees LIMIT ? OFFSET ?",(limit, offset,)).fetchall()
 	elif offset is None:
-		data = app.db_connection.execute("SELECT EmployeeID, LastName, FirstName, City FROM Employees ORDER BY ? LIMIT ?",(order,limit,)).fetchall()
+		data = app.db_connection.execute("SELECT  EmployeeID, LastName, FirstName, City FROM Employees ORDER BY ? LIMIT ?",(order,limit,)).fetchall()
 	elif limit is None:
-		data = app.db_connection.execute("SELECT EmployeeID, LastName, FirstName, City FROM Employees ORDER BY ? LIMIT -1 OFFSET ?",(order,offset,)).fetchall()
+		data = app.db_connection.execute("SELECT  EmployeeID, LastName, FirstName, City FROM Employees ORDER BY ? LIMIT -1 OFFSET ?",(order,offset,)).fetchall()
 	else:
-		data = app.db_connection.execute("SELECT EmployeeID, LastName, FirstName, City FROM Employees ORDER BY ? ASC LIMIT ? OFFSET ?",(order,limit, offset,)).fetchall()
+		data = app.db_connection.execute("SELECT  EmployeeID, LastName, FirstName, City FROM Employees ORDER BY ? ASC LIMIT ? OFFSET ?",(order,limit, offset,)).fetchall()
 	return {"employees":[{"id": x["EmployeeID"], "last_name": x["LastName"], "first_name": x["FirstName"], "city": x["City"]} for x in data]}
 	# return {"limit": limit, "offset": offset}
 
