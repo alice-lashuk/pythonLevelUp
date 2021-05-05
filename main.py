@@ -51,7 +51,7 @@ async def get_categories():
 async def get_customers():
 	app.db_connection.row_factory = sqlite3.Row
 	data = app.db_connection.execute("SELECT CustomerID, CompanyName, Address, PostalCode, City, Country FROM Customers ORDER BY CustomerID;").fetchall()
-	return {"categories" :[{"id": f"{x['CustomerID']}", "name": x["CompanyName"], "full_address": f"{x['Address']} {x['PostalCode']} {x['City']} {x['Country']}"} for x in data]}
+	return {"customers" :[{"id": f"{x['CustomerID']}", "name": x["CompanyName"], "full_address": f"{x['Address']} {x['PostalCode']} {x['City']} {x['Country']}"} for x in data]}
 
 # 	{
 #     "customers": [
