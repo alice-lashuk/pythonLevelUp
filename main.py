@@ -45,13 +45,13 @@ async def shutdown():
 async def get_categories():
 	app.db_connection.row_factory = sqlite3.Row
 	data = app.db_connection.execute("SELECT CategoryID, CategoryName FROM Categories ORDER BY CategoryID;").fetchall()
-	return {"categories" :[{"id": f"{x['CategoryID']}", "name": x["CategoryName"]} for x in data]}
+	return {"categories" :[{"id": f"{x['CategoryID']}".strip(), "name": x["CategoryName"].strip()} for x in data]}
 
 @app.get("/customers")
 async def get_customers():
 	app.db_connection.row_factory = sqlite3.Row
 	data = app.db_connection.execute("SELECT CustomerID, CompanyName, Address, PostalCode, City, Country FROM Customers ORDER BY CustomerID;").fetchall()
-	return {"customers" :[{"id": f"{x['CustomerID']}", "name": x["CompanyName"], "full_address": f"{x['Address']} {x['PostalCode']} {x['City']} {x['Country']}"} for x in data]}
+	return {"customers" :[{"id": f"{x['CustomerID']}".strip(), "name": x["CompanyName"].strip(), "full_address": f"{x['Address']} {x['PostalCode']} {x['City']} {x['Country']}".strip()} for x in data]}
 
 # 	{
 #     "customers": [
