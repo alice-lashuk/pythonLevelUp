@@ -64,7 +64,7 @@ async def get_product(id: str,):
 	return {"id": data['ProductID'], "name": data['ProductName']}
 
 @app.get("/employees")
-async def get_emplpyees(limit: int, offset: int, order: str):
+async def get_emplpyees(offset: Optional[int] = None, order: Optional[str] = None, limit: Optional[int] = None  ):
 	if order not in app.acceptable_order:
 		raise HTTPException(status_code=400, detail="Chnage order value")
 	if order == "first_name":
@@ -74,7 +74,14 @@ async def get_emplpyees(limit: int, offset: int, order: str):
 	elif order == city:
 		order = "City"
 	app.db_connection.row_factory = sqlite3.Row
-	data = app.db_connection.execute("SELECT EmployeeID, LastName, FirstName, City FROM Employees ORDER BY ? LIMIT ?,?",(order,limit, offset,)).fetchall()
+	if offset is None and limit is None:
+		data = app.db_connection.execute("SELECT EmployeeID, LastName, FirstName, City FROM Employees ORDER BY ?",(order,)).fetchall()
+	elif offset is None:
+		data = app.db_connection.execute("SELECT EmployeeID, LastName, FirstName, City FROM Employees ORDER BY ? LIMIT ?",(order,limit,)).fetchall()
+	elif limit is None:
+		data = app.db_connection.execute("SELECT EmployeeID, LastName, FirstName, City FROM Employees ORDER BY ? LIMIT -1 OFFSET ?",(order,offset,)).fetchall()
+	else:
+		data = app.db_connection.execute("SELECT EmployeeID, LastName, FirstName, City FROM Employees ORDER BY ? LIMIT ?,?",(order,limit, offset,)).fetchall()
 	return {"employees":[{"id": x["EmployeeID"], "last_name": x["LastName"], "first_name": x["FirstName"], "city": x["City"]} for x in data]}
 
 
