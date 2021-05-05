@@ -69,9 +69,9 @@ async def get_emplpyees(offset: Optional[int] = None, order: Optional[str] = Non
 		raise HTTPException(status_code=400, detail="Chnage order value")
 	if order == "first_name":
 		order = "FirstName"
-	elif order == last_name:
+	elif order == "last_name":
 		order == "LastName"
-	elif order == city:
+	elif order == "city":
 		order = "City"
 	app.db_connection.row_factory = sqlite3.Row
 	if offset is None and limit is None:
