@@ -70,8 +70,8 @@ async def get_product_extended():
 	app.db_connection.row_factory = sqlite3.Row
 	data = app.db_connection.execute('''
 		SELECT ProductID, ProductName, CategoryName, CompanyName FROM Products
-		JOIN Categories on Products.ProductID = Categories.CategoryID
-		JOIN Suppliers S on Products.SupplierID = S.SupplierID
+		LEFT JOIN Categories on Products.ProductID = Categories.CategoryID
+		LEFT JOIN Suppliers S on Products.SupplierID = S.SupplierID
 		ORDER BY ProductID
 		''').fetchall()
 	return {"products_extended":[{"id": x["ProductID"], "name": x["ProductName"], "category": x["CategoryName"], "supplier": x["CompanyName"]} for x in data]}
