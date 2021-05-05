@@ -76,10 +76,12 @@ async def get_emplpyees(offset: Optional[int] = None, order: Optional[str] = Non
 	app.db_connection.row_factory = sqlite3.Row
 	if offset is None and limit is None and order is None:
 		data = app.db_connection.execute("SELECT EmployeeID, LastName, FirstName, City FROM Employees").fetchall()
-	elif offest is None and order is None:
+	elif offset is None and order is None:
 		data = app.db_connection.execute("SELECT EmployeeID, LastName, FirstName, City FROM Employees LIMIT ?",(limit,)).fetchall()
 	elif limit is None and order is None:
 		data = app.db_connection.execute("SELECT EmployeeID, LastName, FirstName, City FROM Employees LIMIT -1 OFFSET ?",(offset,)).fetchall()
+	elif limit is None and offset is None:
+				data = app.db_connection.execute("SELECT EmployeeID, LastName, FirstName, City FROM Employees ORDER BY ?",(order,)).fetchall()
 	elif order is None:
 		data = app.db_connection.execute("SELECT EmployeeID, LastName, FirstName, City FROM Employees LIMIT ?,?",(limit, offset,)).fetchall()
 	elif offset is None:
