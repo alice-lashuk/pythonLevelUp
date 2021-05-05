@@ -65,6 +65,7 @@ async def get_product(id: str,):
 
 @app.get("/employees")
 async def get_emplpyees(offset: Optional[int] = None, order: Optional[str] = None, limit: Optional[int] = None):
+	# return {limit}
 	if order not in app.acceptable_order and order != None:
 		raise HTTPException(status_code=400, detail="Chnage order value")
 	if order == "first_name":
@@ -83,15 +84,15 @@ async def get_emplpyees(offset: Optional[int] = None, order: Optional[str] = Non
 	elif limit is None and offset is None:
 				data = app.db_connection.execute("SELECT EmployeeID, LastName, FirstName, City FROM Employees ORDER BY ?",(order,)).fetchall()
 	elif order is None:
-		data = app.db_connection.execute("SELECT EmployeeID, LastName, FirstName, City FROM Employees LIMIT ?,?",(limit, offset,)).fetchall()
+		data = app.db_connection.execute("SELECT EmployeeID, LastName, FirstName, City FROM Employees LIMIT ? OFFSET ?",(limit, offset,)).fetchall()
 	elif offset is None:
 		data = app.db_connection.execute("SELECT EmployeeID, LastName, FirstName, City FROM Employees ORDER BY ? LIMIT ?",(order,limit,)).fetchall()
 	elif limit is None:
 		data = app.db_connection.execute("SELECT EmployeeID, LastName, FirstName, City FROM Employees ORDER BY ? LIMIT -1 OFFSET ?",(order,offset,)).fetchall()
 	else:
-		data = app.db_connection.execute("SELECT EmployeeID, LastName, FirstName, City FROM Employees ORDER BY ? LIMIT ?,?",(order,limit, offset,)).fetchall()
+		data = app.db_connection.execute("SELECT EmployeeID, LastName, FirstName, City FROM Employees ORDER BY ? ASC LIMIT ? OFFSET ?",(order,limit, offset,)).fetchall()
 	return {"employees":[{"id": x["EmployeeID"], "last_name": x["LastName"], "first_name": x["FirstName"], "city": x["City"]} for x in data]}
-
+	# return {"limit": limit, "offset": offset}
 
 
 
