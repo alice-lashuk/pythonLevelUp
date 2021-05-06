@@ -182,7 +182,7 @@ async def delete(id: str):
 	# 	FROM Categories""").fetchall()
 	# return customer
 	return {
-		"deleted": id
+		"deleted": 1
 	}
 
 
