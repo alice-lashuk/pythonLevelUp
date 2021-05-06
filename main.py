@@ -165,7 +165,7 @@ async def update(request:PostDBRequest, id: int):
 	# 	FROM Categories""").fetchall()
 	return {
 		"id": id,
-		"name": name
+		"name": "name"
 	}
 
 @app.delete("/categories/{id}")
