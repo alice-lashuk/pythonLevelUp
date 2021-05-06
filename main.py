@@ -143,9 +143,10 @@ async def insert(response: Response, request: PostDBRequest):
 	# 	"""SELECT CategoryName, CategoryId
 	# 	FROM Categories""").fetchall()
 	# return customer
+	last_id = int(cursor.lastrowid)
 	response.status_code = 201
 	return {
-		"id": cursor.lastrowid,
+		"id": last_id,
 		"name": name
 	}
 
