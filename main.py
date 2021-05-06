@@ -70,7 +70,7 @@ async def get_products_orders(id: int):
 	count = app.db_connection.execute("SELECT Count(*) as C FROM Products WHERE ProductID = ?;", (id,)).fetchone()
 	if count['C'] == 0:
 		raise HTTPException(status_code=404, detail="Product not found")
-	data = app.db_connection.execute('''SELECT ProductID, CompanyName, UnitPrice, Quantity, Discount From "Order Details"
+	data = app.db_connection.execute('''SELECT ProductID, "Order Details".OrderID as I , CompanyName, UnitPrice, Quantity, Discount From "Order Details"
 										JOIN Orders O on "Order Details".OrderID = O.OrderID
 										JOIN Customers C on C.CustomerID = O.CustomerID
 										WHERE ProductID = ?''', (id,)).fetchall()
@@ -81,7 +81,7 @@ async def get_products_orders(id: int):
 		unit_price = int(x['UnitPrice'])
 		total_price = (unit_price * quantity) - (discount * (unit_price * quantity))	
 		total_price_rounded = round(total_price, 2)
-		formatted.append({"id":f"{x['ProductID']}", "customer":f"{x['CompanyName']}", "quantity":f"{x['Quantity']}", "total_price": total_price})
+		formatted.append({"id":f"{x['I']}", "customer":f"{x['CompanyName']}", "quantity":f"{x['Quantity']}", "total_price": total_price})
 	return {"orders": formatted}
 
 
