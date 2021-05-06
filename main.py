@@ -64,7 +64,7 @@ async def get_product(id: str,):
 		raise HTTPException(status_code=404, detail="Product not found")
 	return {"id": data['ProductID'], "name": data['ProductName']}
 
-@app.get("/products/{id}/order")
+@app.get("/products/{id}/orders")
 async def get_products_orders(id: int):
 	app.db_connection.row_factory = sqlite3.Row
 	count = app.db_connection.execute("SELECT Count(*) as C FROM Products WHERE ProductID = ?;", (id,)).fetchone()
