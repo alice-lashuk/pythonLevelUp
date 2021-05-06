@@ -77,8 +77,8 @@ async def get_products_orders(id: int):
 	formatted = []
 	for x in data:
 		quantity = int(x['Quantity'])
-		discount = int(x['Discount'])
-		unit_price = int(x['UnitPrice'])
+		discount = float(x['Discount'])
+		unit_price = float(x['UnitPrice'])
 		total_price = (unit_price * quantity) - (discount * (unit_price * quantity))	
 		total_price_rounded = round(total_price, 2)
 		formatted.append({"id":f"{x['I']}", "customer":f"{x['CompanyName']}", "quantity":f"{x['Quantity']}", "total_price": total_price})
