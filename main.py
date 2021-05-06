@@ -64,6 +64,26 @@ async def get_product(id: str,):
 		raise HTTPException(status_code=404, detail="Product not found")
 	return {"id": data['ProductID'], "name": data['ProductName']}
 
+@app.get("/products/{id}/order")
+async def get_products_orders(id: int):
+	app.db_connection.row_factory = sqlite3.Row
+	count = app.db_connection.execute("SELECT Count(*) as C FROM Products WHERE ProductID = ?;", (id,)).fetchone()
+	if count['C'] == 0:
+		raise HTTPException(status_code=404, detail="Product not found")
+	data = app.db_connection.execute('''SELECT ProductID, CompanyName, UnitPrice, Quantity, Discount From "Order Details"
+										JOIN Orders O on "Order Details".OrderID = O.OrderID
+										JOIN Customers C on C.CustomerID = O.CustomerID
+										WHERE ProductID = ?''', (id,)).fetchall()
+	formatted = []
+	for x in data:
+		quantity = int(x['Quantity'])
+		discount = int(x['Discount'])
+		unit_price = int(x['UnitPrice'])
+		total_price = (unit_price * quantity) - (discount * (unit_price * quantity))	
+		total_price_rounded = round(total_price, 2)
+		formatted.append({"id":f"{x['ProductID']}", "customer":f"{x['CompanyName']}", "quantity":f"{x['Quantity']}", "total_price": total_price})
+	return {"orders": formatted}
+
 
 @app.get("/products_extended")
 async def get_product_extended():
@@ -108,6 +128,10 @@ async def get_emplpyees(offset: Optional[int] = None, order: Optional[str] = Non
 
 
 
+
+
+
+
 class PersonRequest(BaseModel):
     name: str
     surname: str
@@ -121,7 +145,7 @@ class PersonResp(BaseModel):
 
 def request_str(request: Request):
 	return """
-Request:
+	Request:
 	method - '{method}'
 	url - '{url}'
 	query - '{query}'
