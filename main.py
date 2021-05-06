@@ -45,14 +45,14 @@ async def shutdown():
 @app.get("/categories")
 async def get_categories():
 	app.db_connection.row_factory = sqlite3.Row
-	data = app.db_connection.execute("SELECT DISTINCT CategoryID, CategoryName FROM Categories ORDER BY CategoryID").fetchall()
+	data = app.db_connection.execute("SELECT CategoryID, CategoryName FROM Categories ORDER BY CategoryID").fetchall()
 	# return data
 	return {"categories" :[{"id": f"{x['CategoryID']}".strip(), "name": f"{x['CategoryName']}".strip()} for x in data]}
 
 @app.get("/customers")
 async def get_customers():
 	app.db_connection.row_factory = sqlite3.Row
-	data = app.db_connection.execute("SELECT DISTINCT CustomerID, CompanyName, Address, PostalCode, City, Country FROM Customers ORDER BY CustomerID").fetchall()
+	data = app.db_connection.execute("SELECT CustomerID, CompanyName, Address, PostalCode, City, Country FROM Customers ORDER BY CustomerID").fetchall()
 	return {"customers" :[{"id": f"{x['CustomerID']}".strip(), "name": x["CompanyName"].strip(), "full_address": f"{x['Address']} {x['PostalCode']} {x['City']} {x['Country']}".strip()} for x in data]}
 
 
@@ -127,9 +127,62 @@ async def get_emplpyees(offset: Optional[int] = None, order: Optional[str] = Non
 	# return {"limit": limit, "offset": offset}
 
 
+class PostDBRequest(BaseModel):
+	name: str
 
 
 
+@app.post("/categories")
+async def insert(response: Response, request: PostDBRequest):
+	name = request.name;
+
+	cursor = app.db_connection.execute(f"INSERT INTO Categories (CategoryName) VALUES (?)", (name,))
+	app.db_connection.commit()
+	# app.db_connection.row_factory = sqlite3.Row
+	# customer = app.db_connection.execute(
+	# 	"""SELECT CategoryName, CategoryId
+	# 	FROM Categories""").fetchall()
+	# return customer
+	response.status_code = 201
+	return {
+		"id": cursor.lastrowid,
+		"name": name
+	}
+
+@app.put("/categories/{id}")
+async def update(request:PostDBRequest, id: int):
+	name = request.name;
+	app.db_connection.row_factory = sqlite3.Row
+	count = app.db_connection.execute("SELECT Count(*) as C FROM Categories WHERE CategoryID = ?", (id,)).fetchone()
+	if count['C'] == 0:
+		raise HTTPException(status_code=404, detail="Category not found")
+	app.db_connection.execute("UPDATE Categories SET CategoryName = (?) where CategoryID = ?", (name,id,))
+	app.db_connection.commit()
+	# app.db_connection.row_factory = sqlite3.Row
+	# customer = app.db_connection.execute(
+	# 	"""SELECT CategoryName, CategoryId
+	# 	FROM Categories""").fetchall()
+	return {
+		"id": id,
+		"name": name
+	}
+
+@app.delete("/categories/{id}")
+async def delete(id: str):
+	app.db_connection.row_factory = sqlite3.Row
+	count = app.db_connection.execute("SELECT Count(*) as C FROM Categories WHERE CategoryID = ?", (id,)).fetchone()
+	if count['C'] == 0:
+		raise HTTPException(status_code=404, detail="Category not found")
+	app.db_connection.execute("DELETE FROM Categories WHERE CategoryID = ?",(id,))
+	app.db_connection.commit()
+	# app.db_connection.row_factory = sqlite3.Row
+	# customer = app.db_connection.execute(
+	# 	"""SELECT CategoryName, CategoryId
+	# 	FROM Categories""").fetchall()
+	# return customer
+	return {
+		"deleted": id
+	}
 
 
 class PersonRequest(BaseModel):
