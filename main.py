@@ -42,6 +42,22 @@ async def shutdown():
     app.db_connection.close()
 
 
+# @app.get("/categories")
+# async def categories():
+#     cursor = app.db_connection.cursor()
+#     cursor.row_factory = sqlite3.Row
+#     data = cursor.execute("""
+#                           SELECT CategoryID, CategoryName
+#                           FROM Categories
+#                           ORDER BY CategoryID;
+#                           """).fetchall()
+#     result  = {"categories": [{"id": x["CategoryID"],
+#              "name": x["CategoryName"]
+#              } 
+#             for x in data]}
+#     return result
+    
+
 @app.get("/categories")
 async def get_categories():
 	app.db_connection.row_factory = sqlite3.Row
