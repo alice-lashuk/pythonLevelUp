@@ -47,13 +47,23 @@ async def get_categories():
 	app.db_connection.row_factory = sqlite3.Row
 	data = app.db_connection.execute("SELECT CategoryID, CategoryName FROM Categories ORDER BY CategoryID").fetchall()
 	# return data
-	return {"categories" :[{"id": f"{x['CategoryID']}".strip(), "name": f"{x['CategoryName']}".strip()} for x in data]}
+	return {"categories" :[{"id": f"{x['CategoryID']}", "name": f"{x['CategoryName']}"} for x in data]}
 
 @app.get("/customers")
 async def get_customers():
 	app.db_connection.row_factory = sqlite3.Row
 	data = app.db_connection.execute("SELECT CustomerID, CompanyName, Address, PostalCode, City, Country FROM Customers ORDER BY CustomerID").fetchall()
-	return {"customers" :[{"id": f"{x['CustomerID']}".strip(), "name": x["CompanyName"].strip(), "full_address": f"{x['Address']} {x['PostalCode']} {x['City']} {x['Country']}".strip()} for x in data]}
+	formatted = []
+	for x in data:
+		postal_code = x['PostalCode']
+		if postal_code == None:
+			postal_code = ""
+		full_address = f"{x['Address']} {postal_code} {x['City']} {x['Country']}"
+		full_address_formatted = ' '.join(full_address.split());
+		formatted.append({"id": f"{x['CustomerID']}", "name": x['CompanyName'], "full_address":full_address_formatted})
+	return {"customers": formatted}
+
+	# return {"customers" :[{"id": f"{x['CustomerID']}", "name": x["CompanyName"], "full_address": f"{x['Address']} {x['PostalCode']} {x['City']} {x['Country']}".strip()} for x in data]}
 
 
 @app.get("/products/{id}")
