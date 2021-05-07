@@ -42,28 +42,28 @@ async def shutdown():
     app.db_connection.close()
 
 
-# @app.get("/categories")
-# async def categories():
-#     cursor = app.db_connection.cursor()
-#     cursor.row_factory = sqlite3.Row
-#     data = cursor.execute("""
-#                           SELECT CategoryID, CategoryName
-#                           FROM Categories
-#                           ORDER BY CategoryID;
-#                           """).fetchall()
-#     result  = {"categories": [{"id": x["CategoryID"],
-#              "name": x["CategoryName"]
-#              } 
-#             for x in data]}
-#     return result
+@app.get("/categories")
+async def categories():
+    cursor = app.db_connection.cursor()
+    cursor.row_factory = sqlite3.Row
+    data = cursor.execute("""
+                          SELECT CategoryID, CategoryName
+                          FROM Categories
+                          ORDER BY CategoryID;
+                          """).fetchall()
+    result  = {"categories": [{"id": x["CategoryID"],
+             "name": x["CategoryName"]
+             } 
+            for x in data]}
+    return result
     
 
-@app.get("/categories")
-async def get_categories():
-	app.db_connection.row_factory = sqlite3.Row
-	data = app.db_connection.execute("SELECT CategoryID, CategoryName FROM Categories ORDER BY CategoryID").fetchall()
-	# return data
-	return {"categories" :[{"id": f"{x['CategoryID']}", "name": f"{x['CategoryName']}"} for x in data]}
+# @app.get("/categories")
+# async def get_categories():
+# 	app.db_connection.row_factory = sqlite3.Row
+# 	data = app.db_connection.execute("SELECT CategoryID, CategoryName FROM Categories ORDER BY CategoryID").fetchall()
+# 	# return data
+# 	return {"categories" :[{"id": f"{x['CategoryID']}", "name": f"{x['CategoryName']}"} for x in data]}
 
 @app.get("/customers")
 async def get_customers():
@@ -74,9 +74,12 @@ async def get_customers():
 		postal_code = x['PostalCode']
 		if postal_code == None:
 			postal_code = ""
-		full_address = f"{x['Address']} {postal_code} {x['City']} {x['Country']}"
-		full_address_formatted = ' '.join(full_address.split());
-		formatted.append({"id": f"{x['CustomerID']}", "name": x['CompanyName'], "full_address":full_address_formatted})
+
+		full_address = f"{x['Address']} {x['City']} {postal_code} {x['Country']}"
+			# full_address = f"{x['Address']} {postal_code} {x['City']} {x['Country']}" 
+		full_address_formatted = ' '.join(full_address.split())
+		name_formated = ' '.join(x['CompanyName'].split())
+		formatted.append({"id": f"{x['CustomerID']}", "name": name_formated, "full_address": full_address_formatted})
 	return {"customers": formatted}
 
 	# return {"customers" :[{"id": f"{x['CustomerID']}", "name": x["CompanyName"], "full_address": f"{x['Address']} {x['PostalCode']} {x['City']} {x['Country']}".strip()} for x in data]}
