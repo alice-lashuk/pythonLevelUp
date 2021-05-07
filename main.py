@@ -130,19 +130,19 @@ async def get_emplpyees(offset: Optional[int] = None, order: Optional[str] = Non
 	app.db_connection.row_factory = sqlite3.Row
 	if offset is None and limit is None and order is None:
 		data = app.db_connection.execute("SELECT  EmployeeID, LastName, FirstName, City FROM Employees").fetchall()
-	elif offset is None and order is None:
+	elif offset is None and order is None and limit is not None:
 		data = app.db_connection.execute("SELECT  EmployeeID, LastName, FirstName, City FROM Employees LIMIT ?",(limit,)).fetchall()
 	# elif limit is None and order is None:
 		# data = app.db_connection.execute("SELECT  EmployeeID, LastName, FirstName, City FROM Employees LIMIT -1 OFFSET ?",(offset,)).fetchall()
-	elif limit is None and order is None:
+	elif limit is None and order is None and offset is not None:
 		data = app.db_connection.execute("SELECT  EmployeeID, LastName, FirstName, City FROM Employees").fetchall()
-	elif limit is None and offset is None:
+	elif limit is None and offset is None and order is not None:
 				data = app.db_connection.execute("SELECT  EmployeeID, LastName, FirstName, City FROM Employees ORDER BY ?",(order,)).fetchall()
-	elif order is None:
+	elif order is None and offset is not None and order is not None:
 		data = app.db_connection.execute("SELECT  EmployeeID, LastName, FirstName, City FROM Employees LIMIT ? OFFSET ?",(limit, offset,)).fetchall()
-	elif offset is None:
+	elif offset is None order is not None and limit is not None:
 		data = app.db_connection.execute("SELECT  EmployeeID, LastName, FirstName, City FROM Employees ORDER BY ? LIMIT ?",(order,limit,)).fetchall()
-	elif limit is None:
+	elif limit is None and offset is not None and order is not None :
 		data = app.db_connection.execute("SELECT  EmployeeID, LastName, FirstName, City FROM Employees ORDER BY ?",(order)).fetchall()
 	# elif limit is None:
 	# 	data = app.db_connection.execute("SELECT  EmployeeID, LastName, FirstName, City FROM Employees ORDER BY ? LIMIT -1 OFFSET ?",(order,offset,)).fetchall()
