@@ -68,16 +68,16 @@ async def categories():
 @app.get("/customers")
 async def get_customers():
 	app.db_connection.row_factory = sqlite3.Row
-	data = app.db_connection.execute("SELECT CustomerID, CompanyName, Address, PostalCode, City, Country FROM Customers ORDER BY CustomerID").fetchall()
+	data = app.db_connection.execute('''SELECT CustomerID, CompanyName, COALESCE(Address, '') || ' ' || COALESCE(PostalCode, '') || ' ' || COALESCE(City, '') || ' ' || COALESCE(Country, '') As FullAddress
+                          FROM Customers
+                          ORDER BY CustomerID;''').fetchall()
 	formatted = []
 	for x in data:
-		postal_code = x['PostalCode']
-		if postal_code == None:
-			postal_code = ""
-
-		full_address = f"{x['Address']} {x['City']} {postal_code} {x['Country']}"
+		# postal_code = x['PostalCode']
+		# if postal_code == None:
+		# 	postal_code = ""
 			# full_address = f"{x['Address']} {postal_code} {x['City']} {x['Country']}" 
-		full_address_formatted = ' '.join(full_address.split())
+		full_address_formatted = ' '.join(x['FullAddress'].split())
 		name_formated = ' '.join(x['CompanyName'].split())
 		formatted.append({"id": f"{x['CustomerID']}", "name": name_formated, "full_address": full_address_formatted})
 	return {"customers": formatted}
