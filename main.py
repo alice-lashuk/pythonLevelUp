@@ -147,41 +147,6 @@ JOIN Suppliers S on Products.SupplierID = S.SupplierID;
 	return {"employees":[{"id": x["EmployeeID"], "last_name": x["LastName"], "first_name": x["FirstName"], "city": x["City"]} for x in data]}
 	# return {"limit": limit, "offset": offset}
 
-# @app.get("/employees")
-# async def employees(limit: int, offset: int, order: str = None):
-    
-#     if order is None:
-#         order = 'EmployeeID'
-#     elif not order in ['first_name', 'last_name', 'city']:
-#         raise HTTPException(
-#             status_code=status.HTTP_400_BAD_REQUEST, detail="Wrong order"
-#         )
-#     else:
-#         if order == 'first_name':
-#             order = 'FirstName'
-#         elif order == 'last_name':
-#             order = 'LastName'
-#         else:
-#             order = 'City'
-    
-#     cursor = app.db_connection.cursor()
-#     cursor.row_factory = sqlite3.Row
-#     data = cursor.execute(f"""
-#                           SELECT EmployeeID, LastName, FirstName, City
-#                           FROM Employees
-#                           ORDER BY {order}
-#                           LIMIT {limit}
-#                           OFFSET {offset};
-#                           """).fetchall()
-    
-#     employees = [{'id': x['EmployeeID'],
-#                   'last_name': x['LastName'],
-#                   'first_name': x['FirstName'],
-#                   'city': x['City']
-#                   }
-#                  for x in data]
-    
-#     return {'employees': employees}
 
 @app.get("/employees")
 async def get_emplpyees(offset: Optional[int] = None, order: Optional[str] = None, limit: Optional[int] = None):
