@@ -103,7 +103,7 @@ async def get_products_orders(id: int):
 		unit_price = float(x['UnitPrice'])
 		total_price = (unit_price * quantity) - (discount * (unit_price * quantity))	
 		total_price_rounded = round(total_price, 2)
-		formatted.append({"id":x['I'], "customer":f"{x['CompanyName']}", "quantity":x['Quantity'], "total_price": total_price})
+		formatted.append({"id":x['I'], "customer":f"{x['CompanyName']}", "quantity":x['Quantity'], "total_price": total_price_rounded})
 	return {"orders": formatted}
 
 
