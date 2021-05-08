@@ -64,16 +64,18 @@ async def get_customers():
 	cursor.row_factory = sqlite3.Row
 	data = cursor.execute('''SELECT CustomerID, CompanyName, COALESCE(Address, '') || ' ' || COALESCE(PostalCode, '') || ' ' || COALESCE(City, '') || ' ' || COALESCE(Country, '') As FullAddress
                           FROM Customers
-                          ORDER BY CustomerID;''').fetchall()
+                          ORDER BY CustomerID COLLATE NOCASE;''').fetchall()
 	formatted = []
 	for x in data:
 		full_address = x['FullAddress']
 		name = x['CompanyName']
 		full_address_formatted = full_address.replace("  ", " ")
-		# name_formated = name.replace("  ", " ")
+		name_formated = name.replace("  ", " ")
+		if full_address_formatted == "  ":
+			full_address_formatted = None
 		# name_formated = ' '.join(name.split())
 		# full_address_formatted = ' '.join(full_address.split())
-		formatted.append({"id": x['CustomerID'], "name": name, "full_address": full_address_formatted})
+		formatted.append({"id": x['CustomerID'].strip(), "name": name, "full_address": full_address_formatted})
 	return {"customers": formatted}
 
 
