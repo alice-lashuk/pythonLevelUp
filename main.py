@@ -71,9 +71,7 @@ async def get_customers():
 		name = x['CompanyName']
 		full_address_formatted = full_address.replace("  ", " ")
 		name_formated = name.replace("  ", " ")
-		# full_address_formatted = ' '.join(x['FullAddress'].split())
-		# name_formated = ' '.join(x['CompanyName'].split())
-		formatted.append({"id": x['CustomerID'], "name": name_formated, "full_address": full_address_formatted})
+		formatted.append({"id": x['CustomerID'].strip(), "name": name_formated, "full_address": full_address_formatted})
 	return {"customers": formatted}
 
 
@@ -87,7 +85,6 @@ async def get_product(id: str,):
 
 @app.get("/products/{id}/orders")
 async def get_products_orders(id: int):
-	# id :48, 
 	app.db_connection.row_factory = sqlite3.Row
 	count = app.db_connection.execute("SELECT Count(*) as C FROM Products WHERE ProductID = ?;", (id,)).fetchone()
 	if count['C'] == 0:
@@ -112,8 +109,8 @@ async def get_product_extended():
 	app.db_connection.row_factory = sqlite3.Row
 	data = app.db_connection.execute('''
 		SELECT  ProductID, ProductName, Products.CategoryID, CompanyName, (SELECT CategoryName from Categories as C
-where C.CategoryID = Products.CategoryID) as CategoryN FROM Products
-JOIN Suppliers S on Products.SupplierID = S.SupplierID;
+	where C.CategoryID = Products.CategoryID) as CategoryN FROM Products
+	JOIN Suppliers S on Products.SupplierID = S.SupplierID;
 		''').fetchall()
 	return {"products_extended":[{"id": x["ProductID"], "name": x["ProductName"], "category": x["CategoryN"], "supplier": x["CompanyName"]} for x in data]}
 
@@ -146,18 +143,12 @@ class PostDBRequest(BaseModel):
 	name: str
 
 
-
 @app.post("/categories")
 async def insert(response: Response, request: PostDBRequest):
 	name = request.name;
 
 	cursor = app.db_connection.execute(f"INSERT INTO Categories (CategoryName) VALUES (?)", (name,))
 	app.db_connection.commit()
-	# app.db_connection.row_factory = sqlite3.Row
-	# customer = app.db_connection.execute(
-	# 	"""SELECT CategoryName, CategoryId
-	# 	FROM Categories""").fetchall()
-	# return customer
 	last_id = int(cursor.lastrowid)
 	response.status_code = 201
 	return {
@@ -174,10 +165,6 @@ async def update(request:PostDBRequest, id: int):
 		raise HTTPException(status_code=404, detail="Category not found")
 	app.db_connection.execute("UPDATE Categories SET CategoryName = (?) where CategoryID = ?", (name,id,))
 	app.db_connection.commit()
-	# app.db_connection.row_factory = sqlite3.Row
-	# customer = app.db_connection.execute(
-	# 	"""SELECT CategoryName, CategoryId
-	# 	FROM Categories""").fetchall()
 	return {
 		"id": id,
 		"name": name
@@ -191,11 +178,6 @@ async def delete(id: str):
 		raise HTTPException(status_code=404, detail="Category not found")
 	app.db_connection.execute("DELETE FROM Categories WHERE CategoryID = ?",(id,))
 	app.db_connection.commit()
-	# app.db_connection.row_factory = sqlite3.Row
-	# customer = app.db_connection.execute(
-	# 	"""SELECT CategoryName, CategoryId
-	# 	FROM Categories""").fetchall()
-	# return customer
 	return {
 		"deleted": 1
 	}
