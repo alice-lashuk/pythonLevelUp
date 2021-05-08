@@ -69,11 +69,11 @@ async def get_customers():
 	for x in data:
 		full_address = x['FullAddress']
 		name = x['CompanyName']
-		# full_address_formatted = full_address.replace("  ", " ")
+		full_address_formatted = full_address.replace("  ", " ")
 		# name_formated = name.replace("  ", " ")
-		name_formated = ' '.join(name.split())
-		full_address_formatted = ' '.join(full_address.split())
-		formatted.append({"id": x['CustomerID'].strip(), "name": name_formated, "full_address": full_address_formatted})
+		# name_formated = ' '.join(name.split())
+		# full_address_formatted = ' '.join(full_address.split())
+		formatted.append({"id": x['CustomerID'], "name": name, "full_address": full_address_formatted})
 	return {"customers": formatted}
 
 
