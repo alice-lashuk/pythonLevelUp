@@ -62,13 +62,13 @@ async def categories():
 async def get_customers():
 	cursor = app.db_connection.cursor()
 	cursor.row_factory = sqlite3.Row
-	data = cursor.execute('''SELECT CustomerID as ID, CompanyName, RTRIM ((COALESCE(Address, '') || ' ' || COALESCE(PostalCode, '') || ' ' || COALESCE(City, '') || ' ' || COALESCE(Country, ''))) As FullAddress
+	data = cursor.execute('''SELECT RTRIM(CustomerID) as ID, RTRIM(CompanyName) as NAME, RTRIM ((COALESCE(Address, '') || ' ' || COALESCE(PostalCode, '') || ' ' || COALESCE(City, '') || ' ' || COALESCE(Country, ''))) As FullAddress
                           FROM Customers
                           ORDER BY CustomerID COLLATE NOCASE;''').fetchall()
 	formatted = []
 	for x in data:
 		full_address = x['FullAddress']
-		name = x['CompanyName']
+		name = x['NAME']
 		# full_address_formatted = full_address.replace("  ", " ")
 		# name_formated = name.replace("  ", " ")
 		# if full_address_formatted == "  ":
