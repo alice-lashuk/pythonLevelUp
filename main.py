@@ -116,8 +116,8 @@ JOIN Suppliers S on Products.SupplierID = S.SupplierID;
 		''').fetchall()
 	return {"products_extended":[{"id": x["ProductID"], "name": x["ProductName"], "category": x["CategoryN"], "supplier": x["CompanyName"]} for x in data]}
 
-@app.get("/employees")
-async def get_emplpyees(offset: Optional[int] = None, order: Optional[str] = None, limit: Optional[int] = None):
+# @app.get("/employees")
+# async def get_emplpyees(offset: Optional[int] = None, order: Optional[str] = None, limit: Optional[int] = None):
 	# return {limit}
 	if order not in app.acceptable_order and order != None:
 		raise HTTPException(status_code=400, detail="Chnage order value")
@@ -130,22 +130,18 @@ async def get_emplpyees(offset: Optional[int] = None, order: Optional[str] = Non
 	app.db_connection.row_factory = sqlite3.Row
 	if offset is None and limit is None and order is None:
 		data = app.db_connection.execute("SELECT  EmployeeID, LastName, FirstName, City FROM Employees").fetchall()
-	elif offset is None and order is None and limit is not None:
+	elif offset is None and order is None:
 		data = app.db_connection.execute("SELECT  EmployeeID, LastName, FirstName, City FROM Employees LIMIT ?",(limit,)).fetchall()
-	# elif limit is None and order is None:
-		# data = app.db_connection.execute("SELECT  EmployeeID, LastName, FirstName, City FROM Employees LIMIT -1 OFFSET ?",(offset,)).fetchall()
-	elif limit is None and order is None and offset is not None:
-		data = app.db_connection.execute("SELECT  EmployeeID, LastName, FirstName, City FROM Employees").fetchall()
-	elif limit is None and offset is None and order is not None:
+	elif limit is None and order is None:
+		data = app.db_connection.execute("SELECT  EmployeeID, LastName, FirstName, City FROM Employees LIMIT -1 OFFSET ?",(offset,)).fetchall()
+	elif limit is None and offset is None:
 				data = app.db_connection.execute("SELECT  EmployeeID, LastName, FirstName, City FROM Employees ORDER BY ?",(order,)).fetchall()
-	elif order is None and offset is not None and order is not None:
+	elif order is None:
 		data = app.db_connection.execute("SELECT  EmployeeID, LastName, FirstName, City FROM Employees LIMIT ? OFFSET ?",(limit, offset,)).fetchall()
-	elif offset is None order is not None and limit is not None:
+	elif offset is None:
 		data = app.db_connection.execute("SELECT  EmployeeID, LastName, FirstName, City FROM Employees ORDER BY ? LIMIT ?",(order,limit,)).fetchall()
-	elif limit is None and offset is not None and order is not None :
-		data = app.db_connection.execute("SELECT  EmployeeID, LastName, FirstName, City FROM Employees ORDER BY ?",(order)).fetchall()
-	# elif limit is None:
-	# 	data = app.db_connection.execute("SELECT  EmployeeID, LastName, FirstName, City FROM Employees ORDER BY ? LIMIT -1 OFFSET ?",(order,offset,)).fetchall()
+	elif limit is None:
+		data = app.db_connection.execute("SELECT  EmployeeID, LastName, FirstName, City FROM Employees ORDER BY ? LIMIT -1 OFFSET ?",(order,offset,)).fetchall()
 	else:
 		data = app.db_connection.execute("SELECT  EmployeeID, LastName, FirstName, City FROM Employees ORDER BY ? ASC LIMIT ? OFFSET ?",(order,limit, offset,)).fetchall()
 	return {"employees":[{"id": x["EmployeeID"], "last_name": x["LastName"], "first_name": x["FirstName"], "city": x["City"]} for x in data]}
@@ -187,6 +183,29 @@ async def get_emplpyees(offset: Optional[int] = None, order: Optional[str] = Non
     
 #     return {'employees': employees}
 
+@app.get("/employees")
+async def get_emplpyees(offset: Optional[int] = None, order: Optional[str] = None, limit: Optional[int] = None):
+	# return {limit}
+	if order not in app.acceptable_order and order != None:
+		raise HTTPException(status_code=400, detail="Chnage order value")
+	if order == "first_name":
+		order = "FirstName"
+	elif order == "last_name":
+		order == "LastName"
+	elif order == "city":
+		order = "City"
+	app.db_connection.row_factory = sqlite3.Row
+	sql = "SELECT  EmployeeID, LastName, FirstName, City FROM Employees";
+	if order is not None:
+		sql += f" ORDER BY {order}"
+	if limit is not None:
+		sql += f" LIMIT {limit}"
+	if offset is not None:
+		sql += f" OFFSET {offset}"
+	data = app.db_connection.execute(sql).fetchall()
+	# return sql
+	return {"employees":[{"id": x["EmployeeID"], "last_name": x["LastName"], "first_name": x["FirstName"], "city": x["City"]} for x in data]}
+	# return {"limit": limit, "offset": offset}
 
 class PostDBRequest(BaseModel):
 	name: str
