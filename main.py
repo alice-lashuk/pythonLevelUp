@@ -205,8 +205,8 @@ async def get_emplpyees(offset: Optional[int] = None, order: Optional[str] = Non
 		sql += f" OFFSET {offset}"
 	elif offset is not None and limit is None:
 		sql += f" LIMIT -1 OFFSET {offset}"
-	# data = app.db_connection.execute(sql).fetchall()
-	return sql
+	data = app.db_connection.execute(sql).fetchall()
+	# return sql
 	return {"employees":[{"id": x["EmployeeID"], "last_name": x["LastName"], "first_name": x["FirstName"], "city": x["City"]} for x in data]}
 	# return {"limit": limit, "offset": offset}
 
