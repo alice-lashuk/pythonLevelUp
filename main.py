@@ -73,7 +73,7 @@ async def get_customers():
 		name_formated = name.replace("  ", " ")
 		# full_address_formatted = ' '.join(x['FullAddress'].split())
 		# name_formated = ' '.join(x['CompanyName'].split())
-		formatted.append({"id": f"{x['CustomerID']}", "name": name_formated, "full_address": full_address_formatted})
+		formatted.append({"id": x['CustomerID'], "name": name_formated, "full_address": full_address_formatted})
 	return {"customers": formatted}
 
 
@@ -103,7 +103,7 @@ async def get_products_orders(id: int):
 		unit_price = float(x['UnitPrice'])
 		total_price = (unit_price * quantity) - (discount * (unit_price * quantity))	
 		total_price_rounded = round(total_price, 2)
-		formatted.append({"id":f"{x['I']}", "customer":f"{x['CompanyName']}", "quantity":x['Quantity'], "total_price": total_price})
+		formatted.append({"id":x['I'], "customer":f"{x['CompanyName']}", "quantity":x['Quantity'], "total_price": total_price})
 	return {"orders": formatted}
 
 
