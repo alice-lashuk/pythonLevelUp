@@ -67,6 +67,19 @@ async def get_suppliers():
 		result.append({"SupplierID": x["SupplierID"], "CompanyName": x["CompanyName"]})
 	return result
 
+@app.get("/suppliers/{id}")
+async def get_supplier(id: int):
+	cursor = app.db_connection.cursor()
+	cursor.row_factory = sqlite3.Row
+	count = cursor.execute("SELECT Count(*) as C FROM Suppliers WHERE SupplierID = ?;", (id,)).fetchone()
+	if count['C'] == 0:
+		raise HTTPException(status_code=404, detail="Supplier not found")
+	data = cursor.execute(''' SELECT * FROM Suppliers WHERE SupplierID = ?''',(id,)).fetchall()
+	# result =[]
+	# for x in data:
+	# 	result.append({"SupplierID": x["SupplierID"], "CompanyName": x["CompanyName"], "":x[""]})
+	return data
+
 
 @app.get("/customers")
 async def get_customers():
