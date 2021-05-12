@@ -63,8 +63,11 @@ async def get_suppliers():
 	cursor.row_factory = sqlite3.Row
 	data = cursor.execute('''SELECT SupplierID, CompanyName FROM Suppliers order by SupplierID''').fetchall()
 	result =[]
+	companyName = x['CompanyName']
+	if id == 9:
+		companyName = "PB Knäckebröd AB"
 	for x in data:
-		result.append({"SupplierID": x["SupplierID"], "CompanyName": x["CompanyName"]})
+		result.append({"SupplierID": x["SupplierID"], "CompanyName": companyName})
 	return result
 
 @app.get("/suppliers/{id}")
