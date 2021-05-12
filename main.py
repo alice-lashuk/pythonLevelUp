@@ -57,6 +57,16 @@ async def categories():
             for x in data]}
     return result
     
+@app.get("/suppliers")
+async def get_suppliers():
+	cursor = app.db_connection.cursor()
+	cursor.row_factory = sqlite3.Row
+	data = cursor.execute('''SELECT SupplierID, CompanyName FROM Suppliers order by SupplierID''').fetchall()
+	result =[]
+	for x in data:
+		result.append({"SupplierID": x["SupplierID"], "CompanyName": x["CompanyName"]})
+	return result
+
 
 @app.get("/customers")
 async def get_customers():
