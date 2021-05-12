@@ -21,7 +21,7 @@ PASSWORD = "NotSoSecurePa$$"
 # SESSIONS_STORED = 1
 SESSIONS_STORED = 3
 
-# app = FastAPI()
+app = FastAPI()
 # app.include_router(northwind_api_router, tags=["northwind"])
 app.id = 0
 app.persons = []
