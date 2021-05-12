@@ -12,6 +12,8 @@ from fastapi.security import HTTPBasic, HTTPBasicCredentials
 from starlette.status import HTTP_401_UNAUTHORIZED
 from fastapi.responses import PlainTextResponse, RedirectResponse, HTMLResponse, JSONResponse
 import random
+from views import router as northwind_api_router
+
 
 # http://4dm1n:NotSoSecurePa$$@127.0.0.1:8000/
 USERNAME = "4dm1n"
@@ -20,6 +22,7 @@ PASSWORD = "NotSoSecurePa$$"
 SESSIONS_STORED = 3
 
 app = FastAPI()
+app.include_router(northwind_api_router, tags=["northwind"])
 app.id = 0
 app.persons = []
 templates = Jinja2Templates(directory="templates")
@@ -57,43 +60,43 @@ async def categories():
             for x in data]}
     return result
     
-@app.get("/suppliers")
-async def get_suppliers():
-	cursor = app.db_connection.cursor()
-	cursor.row_factory = sqlite3.Row
-	data = cursor.execute('''SELECT SupplierID, CompanyName FROM Suppliers order by SupplierID''').fetchall()
-	result =[]
-	for x in data:
-		companyName = x['CompanyName']
-		if x['SupplierID'] == 9:
-			companyName = "PB Knäckebröd AB"
-		result.append({"SupplierID": x["SupplierID"], "CompanyName": companyName})
-	return result
+# @app.get("/suppliers")
+# async def get_suppliers():
+# 	cursor = app.db_connection.cursor()
+# 	cursor.row_factory = sqlite3.Row
+# 	data = cursor.execute('''SELECT SupplierID, CompanyName FROM Suppliers order by SupplierID''').fetchall()
+# 	result =[]
+# 	for x in data:
+# 		companyName = x['CompanyName']
+# 		if x['SupplierID'] == 9:
+# 			companyName = "PB Knäckebröd AB"
+# 		result.append({"SupplierID": x["SupplierID"], "CompanyName": companyName})
+# 	return result
 
-@app.get("/suppliers/{id}")
-async def get_supplier(id: int):
-	cursor = app.db_connection.cursor()
-	cursor.row_factory = sqlite3.Row
-	count = cursor.execute("SELECT Count(*) as C FROM Suppliers WHERE SupplierID = ?;", (id,)).fetchone()
-	if count['C'] == 0:
-		raise HTTPException(status_code=404, detail="Supplier not found")
-	x = cursor.execute(''' SELECT * FROM Suppliers WHERE SupplierID = ?''',(id,)).fetchone()
-	companyName = x['CompanyName']
-	if id == 9:
-		companyName = "PB Knäckebröd AB"
-	return {
-    "SupplierID": x['SupplierID'],
-    "CompanyName": companyName,
-    "ContactName": x['ContactName'],
-    "ContactTitle": x['ContactTitle'],
-    "Address": x['Address'],
-    "City": x['City'],
-    "PostalCode": x['PostalCode'],
-    "Country": x['Country'],
-    "Phone": x['Phone'],
-    "Fax": x['Fax'],
-    "HomePage": x['HomePage'],
-}
+# @app.get("/suppliers/{id}")
+# async def get_supplier(id: int):
+# 	cursor = app.db_connection.cursor()
+# 	cursor.row_factory = sqlite3.Row
+# 	count = cursor.execute("SELECT Count(*) as C FROM Suppliers WHERE SupplierID = ?;", (id,)).fetchone()
+# 	if count['C'] == 0:
+# 		raise HTTPException(status_code=404, detail="Supplier not found")
+# 	x = cursor.execute(''' SELECT * FROM Suppliers WHERE SupplierID = ?''',(id,)).fetchone()
+# 	companyName = x['CompanyName']
+# 	if id == 9:
+# 		companyName = "PB Knäckebröd AB"
+# 	return {
+#     "SupplierID": x['SupplierID'],
+#     "CompanyName": companyName,
+#     "ContactName": x['ContactName'],
+#     "ContactTitle": x['ContactTitle'],
+#     "Address": x['Address'],
+#     "City": x['City'],
+#     "PostalCode": x['PostalCode'],
+#     "Country": x['Country'],
+#     "Phone": x['Phone'],
+#     "Fax": x['Fax'],
+#     "HomePage": x['HomePage'],
+# }
 	# return x
 
 
