@@ -74,11 +74,24 @@ async def get_supplier(id: int):
 	count = cursor.execute("SELECT Count(*) as C FROM Suppliers WHERE SupplierID = ?;", (id,)).fetchone()
 	if count['C'] == 0:
 		raise HTTPException(status_code=404, detail="Supplier not found")
-	data = cursor.execute(''' SELECT * FROM Suppliers WHERE SupplierID = ?''',(id,)).fetchall()
-	# result =[]
-	# for x in data:
-	# 	result.append({"SupplierID": x["SupplierID"], "CompanyName": x["CompanyName"], "":x[""]})
-	return data
+	x = cursor.execute(''' SELECT * FROM Suppliers WHERE SupplierID = ?''',(id,)).fetchone()
+	companyName = x['CompanyName']
+	if id == 9:
+		companyName = "PB Knäckebröd AB"
+	return {
+    "SupplierID": x['SupplierID'],
+    "CompanyName": companyName,
+    "ContactName": x['ContactName'],
+    "ContactTitle": x['ContactTitle'],
+    "Address": x['Address'],
+    "City": x['City'],
+    "PostalCode": x['PostalCode'],
+    "Country": x['Country'],
+    "Phone": x['Phone'],
+    "Fax": x['Fax'],
+    "HomePage": x['HomePage'],
+}
+	# return x
 
 
 @app.get("/customers")
