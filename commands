@@ -1,0 +1,2 @@
+heroku pg:backups:restore 'https://github.com/alice-lashuk/pythonLevelUp/blob/main/northwind.dump' postgresql-regular-70471 --app da-plu-2021-alice-lashuk --confirm da-plu-2021-alice-lashuk
+
