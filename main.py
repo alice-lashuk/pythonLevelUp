@@ -12,7 +12,7 @@ from fastapi.security import HTTPBasic, HTTPBasicCredentials
 from starlette.status import HTTP_401_UNAUTHORIZED
 from fastapi.responses import PlainTextResponse, RedirectResponse, HTMLResponse, JSONResponse
 import random
-# from views import router as northwind_api_router
+from views import router as northwind_api_router
 
 
 # http://4dm1n:NotSoSecurePa$$@127.0.0.1:8000/
@@ -22,7 +22,7 @@ PASSWORD = "NotSoSecurePa$$"
 SESSIONS_STORED = 3
 
 app = FastAPI()
-# app.include_router(northwind_api_router, tags=["northwind"])
+app.include_router(northwind_api_router, tags=["northwind"])
 app.id = 0
 app.persons = []
 templates = Jinja2Templates(directory="templates")

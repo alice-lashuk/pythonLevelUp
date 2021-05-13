@@ -4,3 +4,8 @@ postgres://nehmpajzrbqfup:738b23ef3662e955289ce5fd85b15fc11d6a093c88af5ba0b1b43e
 
 heroku pg:backups:restore 'https://github.com/alice-lashuk/pythonLevelUp/blob/main/northwind.postgre.sql' 'postgresql://nehmpajzrbqfup:738b23ef3662e955289ce5fd85b15fc11d6a093c88af5ba0b1b43eaca6a552e2@ec2-34-240-75-196.eu-west-1.compute.amazonaws.com:5432/d26asldqv2sgo
 ' --app da-plu-2021-alice-lashuk --confirm da-plu-2021-alice-lashuk
+
+
+
+postgresql://postrges:pass@localhost:5432/northwind
+
