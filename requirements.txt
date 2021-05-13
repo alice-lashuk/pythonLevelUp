@@ -36,3 +36,4 @@ watchgod==0.7
 websockets==8.1
 SQLAlchemy==1.4.13
 psycopg2-binary==2.8.6
+sqlacodegen==2.3.0
