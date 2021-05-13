@@ -26,7 +26,7 @@ async def get_shippers(db: Session = Depends(get_db)):
 async def get_suppliers(db: Session = Depends(get_db)):
     return crud.get_suppliers(db)
 
-@router.get("/suppliers/{id}", response_model=schemas.SupplierID)
+@router.get("/suppliers/{supplier_id}", response_model=schemas.SupplierID)
 async def get_supplier_by_id(supplier_id: PositiveInt, db: Session = Depends(get_db)):
 	db_supplier = crud.get_supplier_by_id(db, supplier_id)
 	if db_supplier is None:
@@ -34,7 +34,7 @@ async def get_supplier_by_id(supplier_id: PositiveInt, db: Session = Depends(get
 	return db_supplier
 
 
-@router.get("/suppliers/{id}/products", response_model=List[schemas.ProductsSupplier])
+@router.get("/suppliers/{supplier_id}/products", response_model=List[schemas.ProductsSupplier])
 async def get_supplier_products(supplier_id: PositiveInt, db: Session = Depends(get_db)):
 	db_supplier = crud.get_supplier_by_id(db, supplier_id)
 	if db_supplier is None:
