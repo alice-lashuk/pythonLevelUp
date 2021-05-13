@@ -29,7 +29,7 @@ class SupplierID(BaseModel):
     Country: constr(max_length=40)= None
     Phone: constr(max_length=40)= None
     Fax: constr(max_length=40)= None
-    HomePage: constr(max_length=40)= None	
+    HomePage: constr(max_length=200)= None	
 
     class Config:
         orm_mode = True
