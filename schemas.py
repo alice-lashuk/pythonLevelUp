@@ -51,6 +51,36 @@ class ProductsSupplier(BaseModel):
 	class Config:
 		orm_mode = True
 
+class SupplierRequest(BaseModel):
+    CompanyName: constr(max_length=200)
+    ContactName: constr(max_length=200) = None
+    ContactTitle: constr(max_length=200) = None
+    Address: constr(max_length=200) = None
+    City: constr(max_length=200) = None
+    PostalCode: constr(max_length=200) = None
+    Country: constr(max_length=200) = None
+    Phone: constr(max_length=200) = None
+
+class SupplierResponse(BaseModel):
+    SupplierID: int
+    CompanyName: constr(max_length=200)
+    ContactName: constr(max_length=200) = None
+    ContactTitle: constr(max_length=200) = None
+    Address: constr(max_length=200) = None
+    City: constr(max_length=200) = None
+    PostalCode: constr(max_length=200) = None
+    Country: constr(max_length=200) = None
+    Phone: constr(max_length=200) = None
+    Fax: constr(max_length=200) = None
+    HomePage: constr(max_length=200) = None
+
+
+
+
+
+
+
+
 
 
 

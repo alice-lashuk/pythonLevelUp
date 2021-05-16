@@ -1,6 +1,6 @@
 from typing import List
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Response
 from pydantic import PositiveInt
 from sqlalchemy.orm import Session
 
@@ -42,4 +42,11 @@ async def get_supplier_products(supplier_id: PositiveInt, db: Session = Depends(
 	db_products = crud.get_supplier_products(db, supplier_id)
 	return db_products
 
+@router.post("/suppliers", response_model=schemas.SupplierResponse)
+async def add_supplier(response: Response, request: schemas.SupplierRequest, db: Session = Depends(get_db)):
+	new_id = crud.get_new_id(db).SupplierID + 1
+	# return new_id
+	crud.add_supplier(db, request, new_id)
+	new_supplier = schemas.SupplierResponse(SupplierID = new_id, CompanyName = request.CompanyName, ContactName = request.ContactName,ContactTitle = request.ContactTitle, Address = request.Address,  City = request.City, PostalCode = request.PostalCode, Country = request.Country, Phone= request.Phone, Fax= None, HomePage = None)
+	return new_supplier
 # , response_model=List[schemas.ProductsSupplier]
