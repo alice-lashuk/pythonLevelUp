@@ -45,9 +45,30 @@ async def get_supplier_products(supplier_id: PositiveInt, db: Session = Depends(
 @router.post("/suppliers", response_model=schemas.SupplierResponse)
 async def add_supplier(response: Response, request: schemas.SupplierRequest, db: Session = Depends(get_db)):
 	new_id = crud.get_new_id(db).SupplierID + 1
-	# return new_id
 	crud.add_supplier(db, request, new_id)
 	new_supplier = schemas.SupplierResponse(SupplierID = new_id, CompanyName = request.CompanyName, ContactName = request.ContactName,ContactTitle = request.ContactTitle, Address = request.Address,  City = request.City, PostalCode = request.PostalCode, Country = request.Country, Phone= request.Phone, Fax= None, HomePage = None)
 	response.status_code = 201
 	return new_supplier
-# , response_model=List[schemas.ProductsSupplier]
+
+# @router.put("/suppliers/{id})
+# async def update_supplier(request: schemas.SupplierRequest)
+
+@router.delete("/suppliers/{id}")
+async def delete_supplier(response: Response, supplier_id: PositiveInt, db: Session = Depends(get_db)):
+	db_supplier = crud.get_supplier_by_id(db, supplier_id)
+	if db_supplier is None:
+		raise HTTPException(status_code=401, detail="Supplier not found")
+	crud.delete_supplier(db, supplier_id)
+	response.status_code = 204
+
+
+
+
+
+
+
+
+
+
+
+

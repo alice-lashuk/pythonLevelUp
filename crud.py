@@ -36,4 +36,8 @@ def get_new_id(db: Session):
 	return (
         db.query(models.Supplier).order_by(models.Supplier.SupplierID.desc()).first()
     )
+
+def delete_supplier(db: Session, supplier_id: int):
+	db.query(models.Supplier).filter(models.Supplier.SupplierID == supplier_id).delete()
+	db.commit()
 # 
