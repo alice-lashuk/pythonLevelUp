@@ -40,4 +40,34 @@ def get_new_id(db: Session):
 def delete_supplier(db: Session, supplier_id: int):
 	db.query(models.Supplier).filter(models.Supplier.SupplierID == supplier_id).delete()
 	db.commit()
-# 
+
+def update_supplier(db: Session, supplier_id: int, new_supplier: schemas.SupplierRequest):
+	if new_supplier.CompanyName != None:
+		db.query(models.Supplier).filter(models.Supplier.SupplierID == supplier_id).update({models.Supplier.CompanyName: new_supplier.CompanyName})
+		db.commit()
+	if new_supplier.CompanyName != None:
+		db.query(models.Supplier).filter(models.Supplier.SupplierID == supplier_id).update({models.Supplier.ContactName: new_supplier.ContactName})
+		db.commit()
+	if new_supplier.ContactTitle != None:
+		db.query(models.Supplier).filter(models.Supplier.SupplierID == supplier_id).update({models.Supplier.ContactTitle: new_supplier.ContactTitle})
+		db.commit()
+	if new_supplier.Address != None:
+		db.query(models.Supplier).filter(models.Supplier.SupplierID == supplier_id).update({models.Supplier.Address: new_supplier.Address})
+		db.commit()
+	if new_supplier.City != None:
+		db.query(models.Supplier).filter(models.Supplier.SupplierID == supplier_id).update({models.Supplier.City: new_supplier.City})
+		db.commit()
+	if new_supplier.PostalCode != None:
+		db.query(models.Supplier).filter(models.Supplier.SupplierID == supplier_id).update({models.Supplier.PostalCode: new_supplier.PostalCode})
+		db.commit()
+	if new_supplier.Country != None:
+		db.query(models.Supplier).filter(models.Supplier.SupplierID == supplier_id).update({models.Supplier.Country: new_supplier.Country})
+		db.commit()
+	if new_supplier.Phone != None:
+		db.query(models.Supplier).filter(models.Supplier.SupplierID == supplier_id).update({models.Supplier.Phone: new_supplier.Phone	})
+		db.commit()
+
+
+
+
+

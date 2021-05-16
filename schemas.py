@@ -52,7 +52,7 @@ class ProductsSupplier(BaseModel):
 		orm_mode = True
 
 class SupplierRequest(BaseModel):
-    CompanyName: constr(max_length=200)
+    CompanyName: constr(max_length=200) = None
     ContactName: constr(max_length=200) = None
     ContactTitle: constr(max_length=200) = None
     Address: constr(max_length=200) = None
@@ -62,7 +62,7 @@ class SupplierRequest(BaseModel):
     Phone: constr(max_length=200) = None
 
 class SupplierResponse(BaseModel):
-    SupplierID: int
+    SupplierID: PositiveInt
     CompanyName: constr(max_length=200)
     ContactName: constr(max_length=200) = None
     ContactTitle: constr(max_length=200) = None
@@ -74,6 +74,8 @@ class SupplierResponse(BaseModel):
     Fax: constr(max_length=200) = None
     HomePage: constr(max_length=200) = None
 
+    class Config:
+        orm_mode = True
 
 
 

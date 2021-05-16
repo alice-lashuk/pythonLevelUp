@@ -50,8 +50,12 @@ async def add_supplier(response: Response, request: schemas.SupplierRequest, db:
 	response.status_code = 201
 	return new_supplier
 
-# @router.put("/suppliers/{id})
-# async def update_supplier(request: schemas.SupplierRequest)
+@router.put("/suppliers/{supplier_id}", response_model=schemas.SupplierResponse)
+async def update_supplier(request: schemas.SupplierRequest, supplier_id: int, db: Session = Depends(get_db)):
+	crud.update_supplier(db, supplier_id, request)
+	updated_supplier = crud.get_supplier_by_id(db, supplier_id)
+	return updated_supplier
+
 
 @router.delete("/suppliers/{supplier_id}")
 async def delete_supplier(response: Response, supplier_id: PositiveInt, db: Session = Depends(get_db)):
