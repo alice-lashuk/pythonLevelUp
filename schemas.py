@@ -60,6 +60,7 @@ class SupplierRequest(BaseModel):
     PostalCode: constr(max_length=200) = None
     Country: constr(max_length=200) = None
     Phone: constr(max_length=200) = None
+    
 
 class SupplierResponse(BaseModel):
     SupplierID: PositiveInt

@@ -45,7 +45,7 @@ def update_supplier(db: Session, supplier_id: int, new_supplier: schemas.Supplie
 	if new_supplier.CompanyName != None:
 		db.query(models.Supplier).filter(models.Supplier.SupplierID == supplier_id).update({models.Supplier.CompanyName: new_supplier.CompanyName})
 		db.commit()
-	if new_supplier.CompanyName != None:
+	if new_supplier.ContactName != None:
 		db.query(models.Supplier).filter(models.Supplier.SupplierID == supplier_id).update({models.Supplier.ContactName: new_supplier.ContactName})
 		db.commit()
 	if new_supplier.ContactTitle != None:
