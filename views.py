@@ -48,5 +48,6 @@ async def add_supplier(response: Response, request: schemas.SupplierRequest, db:
 	# return new_id
 	crud.add_supplier(db, request, new_id)
 	new_supplier = schemas.SupplierResponse(SupplierID = new_id, CompanyName = request.CompanyName, ContactName = request.ContactName,ContactTitle = request.ContactTitle, Address = request.Address,  City = request.City, PostalCode = request.PostalCode, Country = request.Country, Phone= request.Phone, Fax= None, HomePage = None)
+	response.status_code = 201
 	return new_supplier
 # , response_model=List[schemas.ProductsSupplier]
